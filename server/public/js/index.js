@@ -4,3 +4,6 @@ import * as logUtils from './login.js'
 regUtils.initRegForm()
 logUtils.initLogForm()
 renderCat()
+
+
+
