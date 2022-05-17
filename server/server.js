@@ -104,7 +104,7 @@ app.get('/thread', checkUser, async (req,res)=>{
 io.on('connection',async (socket)=>{
     let currentSocketId = socket.id
     // socket.emit("hello","world") // to single user who connect to this server
-    
+    console.log(currentSocketId)
 
     let cookief =socket.handshake.headers.cookie;
     let userId = await checkToken(cookief)
@@ -137,10 +137,12 @@ io.on('connection',async (socket)=>{
         if(foundUser){
 
             
-            socket.emit('duplicate','error')
-        
+            // socket.emit('duplicate','error')
             
-           
+            currentSocketId = foundUser.socketId
+            
+            io.to(currentSocketId).emit('duplicate','error')
+
             io.sockets.sockets.forEach((socket) => {
           
 
@@ -155,11 +157,52 @@ io.on('connection',async (socket)=>{
                     
                     const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
                     console.log('the rest:',sockets);
+                    
                 }
 
 
 
             });
+
+
+
+
+            const user = userJoin(socket.id,username,title,threadId,userId)
+
+               
+                socket.join(user.title)
+
+                console.log(author,message,user.title,user.username,userId)
+
+                socket.emit('init-load',{
+                    author,
+                    message,
+                    title,
+                    user:user.username,
+                    createAt: new Date().toLocaleString()
+                })
+
+
+
+
+                console.log(user) // 印出user details
+                currentSocketId=user.socketId;
+                if(user.username != 'guest'){
+                socket.to(user.title).emit('new-user',{
+                    user:user.username,
+                    message:'已進入聊天室',
+                    createAt: new Date().toLocaleString()
+                    
+                })
+
+
+                // send users and room info 
+                io.to(user.title).emit('roomusers',{
+                    room:user.title,
+                    users: getRoomUsers(user.title)
+                })
+                }
+
 
                
                 
@@ -236,17 +279,16 @@ io.on('connection',async (socket)=>{
 
    
         socket.on('disconnect', ()=>{
-            // console.log('a user disconnect')
-            // const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
-            // console.log(sockets);
-            // console.log(foundUser)
+            console.log('a user disconnect')
+            const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
+            console.log(sockets);
+            console.log(foundUser)
          
         
             
 
-            if(!foundUser){
-     
-                const user= userLeave(socket.id);
+                console.log(currentSocketId)
+                const user= userLeave(currentSocketId);
                 
 
                 
@@ -263,7 +305,7 @@ io.on('connection',async (socket)=>{
                     room:user.title,
                     users: getRoomUsers(user.title)
                 })
-                }
+                
             
         }
         )

@@ -119,6 +119,7 @@ socket.on('typing',(data)=>{
 
 
 socket.on('duplicate',(message)=>{
+    
     window.location.href='/'
 })
 
