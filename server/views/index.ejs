@@ -28,8 +28,20 @@
 
     
             <nav class="login-signup">
+
+
+                <% if (user) { %>
+                <span>Welcome, <span class="login_user"><%= user.user_name %></span></span>
+                <button class="logout_btn btn">登出</button>
+                
+                 <%  } else { %>
+
+
+
                 <button class="login_btn btn">登入</button>
                 <button class="signup_btn btn">註冊</button>
+
+                <% } %>
             </nav>
 
         </div>
@@ -39,6 +51,35 @@
     </header>
 
 
+
+
+    <% if (user) { %>
+
+        <div class="post-full-screen is_none">
+            <div class="post is_none">
+                <form action="#" class="beginPost ">
+                    <select name="cat" id="" class="post__select">
+                        <option value="一般">一般</option>
+                        <option value="上班">上班</option>
+                        <option value="科技">科技</option>
+                        <option value="愛情">愛情</option>
+                        <option value="音樂">音樂</option>
+                        <option value="遊戲">遊戲</option>
+                    </select>
+                    <input name="title" type="text" placeholder="標題" class="post__input">
+                    <textarea name="message" id="" cols="30" rows="10" class="post__text" placeholder="內容"></textarea>
+                    <p class="error-message"></p>
+                    <div class="button-block"> 
+                        <button class="create">創建</button>
+                    </div>
+                  
+                </form>
+                <a href="#" class="form-close">
+                    <img src="icon/close.svg" alt="">
+                </a>
+               </div>
+        </div>
+   <% } %>
 
 
 
@@ -103,10 +144,10 @@
                  </div>
 
 
-               <form action="">
-                   <input type="email" class="login-email" placeholder="電郵">
+               <form action="#" class="login-form" >
+                   <input type="email" class="login-email" placeholder="電郵" name="email">
 
-                   <input type="password" class="login-password" placeholder="密碼">
+                   <input type="password" class="login-password" placeholder="密碼" name="password">
 
                    <button class="continue">
                        登入
@@ -154,13 +195,15 @@
 
 
 
-   
+
     <div class="main">
         <div class="main__container">
             <div class="sidebar">
+                <% if (user) { %>
                 <button class="create_btn">
                     創建聊天室
                 </button>
+                <% } %>
                 <div class="main-option">
                     <input class="radio__input" type="radio" name="radio_option" id="radio1" >
                     <label class="allchat__label radio__label "for="radio1">
@@ -184,8 +227,12 @@
             </div>
 
 
-               
-            <main>
+            
+            <main class="thread-section">
+                <div class="thread-container">
+                    
+                </div>
+
             </main>
         </div>
     </div>

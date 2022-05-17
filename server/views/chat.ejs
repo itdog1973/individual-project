@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chat room</title>
+    <link rel="stylesheet" href="../css/chat.css">
+</head>
+<body>
+   <div id="chat">
+       <h2 class="title"></h2>
+       <div class="first-message"></div>
+       <div id="chat__window">
+           <div id="chat__message">
+           
+               
+           </div>
+           <div id="feedback"></div>
+
+
+          
+       </div>
+
+                <div class="send">
+                    <% if (user) { %> 
+                    <input type="text" name="message" id="message">
+                    <button id="send__btn">
+                        <img src="/icon/send-svgrepo-com.svg" alt="">
+                    </button> 
+                    <% }  else { %> 
+                        <input type="text" name="message" id="message" disabled placeholder="請登入聊天吧">
+                        <button id="send__btn" disabled>
+                            <img src="/icon/send-svgrepo-com.svg" alt="">
+                        </button> 
+                    <% } %>    
+                </div>
+      
+ 
+      
+   </div>
+
+   
+
+
+
+   <script src="/socket.io/socket.io.js" ></script>
+   <script src="../chat/socket.js"></script>
+   <script src="../chat/index.js" type="module" ></script>
+</body>
+</html>

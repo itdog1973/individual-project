@@ -27,26 +27,27 @@ userDB.insertOne = (username,password,email)=>{
                 }else{
 
 
-                    connection.execute('INSERT INTO users (user_name) VALUES (?);',[username],(err,results)=>{
+                    connection.execute('INSERT INTO users (user_name,email,password) VALUES (?,?,?);',[username,email,password],(err,results)=>{
                
                         if(err){
                             connection.rollback(()=>{
                                 connection.release()
                                 return reject(err)
                             })
+                       
                         
                         }else{
-                        
-                            connection.execute('INSERT INTO user_credentials (authentication_type_id,email,password,user_id) VALUES (?,?,?,?);',[1,email,password, results.insertId],(err)=>{
+                           
+                            connection.execute('INSERT INTO user_credentials (authentication_type_id,user_id) VALUES (?,?);',[1, results.insertId],(err)=>{
                                 if(err){
                                     connection.rollback(()=>{
                                         connection.release()
                                         return reject(err)
                                     })
-                               
+                                   
                                 }else{
-                                  
-                                    connection.commit((err,results)=>{
+                                    console.log(results)
+                                    connection.commit((err)=>{
                                         if(err){
                                             connection.rollback(()=>{
                                                 connection.release()
@@ -57,7 +58,7 @@ userDB.insertOne = (username,password,email)=>{
                     
                                             connection.release()
                                    
-                                            return resolve("ok")
+                                            return resolve(results.insertId)
                                         }
                                     })
                                 }
@@ -77,14 +78,34 @@ userDB.insertOne = (username,password,email)=>{
 
 
 //登陸使用者
-userDB.loginOne=(email,password)=>{
+userDB.loginOne=(email)=>{
     return new Promise((resolve,reject)=>{
-        pool.execute('SELECT * FROM user_credentials WHERE email = ?',[email],(err,results)=>{
+        pool.execute('SELECT * FROM users WHERE email = ?',[email],(err,results)=>{
             if(err){
                 console.log(err)
                 return reject (err)
             }else{
                 console.log(results[0])
+                return resolve(results[0])
+            }
+        })
+    })
+}
+
+
+
+
+
+
+
+userDB.findOne=(id)=>{
+    return new Promise((resolve,reject)=>{
+        pool.execute('SELECT * FROM users join user_credentials on users.user_id = user_credentials.user_id WHERE users.user_id = ? ',[id],(err,results)=>{
+            if(err){
+                console.log(err)
+                return reject (err)
+            }else{
+                console.log(results)
                 return resolve(results[0])
             }
         })

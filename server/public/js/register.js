@@ -15,6 +15,9 @@ export function initRegForm(){
 
     // let registerForm = document.querySelector('.register-section')
     let registerBtn = document.querySelector('.signup_btn')
+    console.log(registerBtn)
+    console.log(!!registerBtn)
+    if(!!registerBtn){
     registerBtn.addEventListener('click',()=>{
         fullscreen.classList.toggle('is_none')
         registerForm.classList.toggle('is_none')
@@ -33,18 +36,18 @@ export function initRegForm(){
  
   
     document.querySelector('.reg-form').addEventListener('submit', complicatedRequest)
-
-    
-
-
+    }
 }
 
 
-async function complicatedRequest(ev){
+
+
+
+export async function complicatedRequest(ev){
     ev.preventDefault();
 
-    let regForm = ev.target;
-    let formData = new FormData(regForm)
+    let Form = ev.target;
+    let formData = new FormData(Form)
 
 
     for (let key of formData.keys()){ //keys method can create an iterator 
@@ -65,8 +68,10 @@ async function complicatedRequest(ev){
     try{
         let response = await fetch(request)
         data = await response.json()
-        console.log(data)
-        directLogin(data)
+        if(response.status=="201"){
+            directLogin()
+        }
+       
         
     }catch(err){
         console.log(err)
@@ -96,14 +101,13 @@ function convert2Json(formData){
 
 function directLogin(data){
 
-    console.log('iam rendering')
-    console.log(data)
-    if (data == "ok"){
-        console.log('trying to close the back')
-        document.querySelector('.full-screen').classList.toggle('is_none')
-        document.querySelector('.register-section').classList.toggle('is_none')
 
-    }
+
+    console.log('trying to close the back')
+    document.querySelector('.full-screen').classList.toggle('is_none')
+    document.querySelector('.register-section').classList.toggle('is_none')
+
+
 
     let welcomeMsg = document.createElement('div')
     welcomeMsg.className='welcomeMsg'
