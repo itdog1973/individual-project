@@ -114,22 +114,39 @@ function directLogin(data){
     let welcomePic = document.createElement('div')
     welcomePic.className="welcomePic"
     let welcomeIcon = document.createElement('img')
-    welcomeIcon.src="icon/welcome.svg"
+    welcomeIcon.src="/icon/welcome.svg"
     welcomePic.appendChild(welcomeIcon)
 
     let welcomeTxt = document.createElement('div')
     welcomeTxt.className="welcomeTxt"
-    welcomeMsg.append(welcomePic,welcomeTxt)
 
+
+
+    let welcomeTimer = document.createElement('h5')
+    welcomeTimer.innerHTML=3
+    let welcomeTimerReminder = document.createElement('h4')
+    welcomeTimerReminder.textContent='3秒後自動登入'
     welcomeTxt.textContent="歡迎成為Chill Talk的一份子!"
+
+    welcomeMsg.append(welcomePic,welcomeTxt,welcomeTimerReminder,welcomeTimer)
+
+
+
+
 
     document.body.appendChild(welcomeMsg);
 
 
     
-    setTimeout(()=>{
-        welcomeMsg.remove()
-    },2000)
+    window.setInterval(function(){
+
+        welcomeTimer.innerHTML=welcomeTimer.innerHTML-1
+        if(welcomeTimer.innerHTML==0){
+            document.location='/'
+        }
+
+    }, 1000)
+
 
 
 }

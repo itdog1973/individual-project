@@ -65,7 +65,9 @@ async function sendPost(ev){
         let response = await fetch(request)
         let data = await response.json()
         if(response.status=="200"){
-            window.location.href=`http://localhost:3000/thread?title=${data.title}&message=${data.message}&author=${data.username}&user=${data.username}&threadId=${data.threadId}`
+            console.log(data)
+            document.location=`/thread?title=${data.title}&message=${data.message}&author=${data.username}&user=${data.username}&threadId=${data.threadId}&time=${data.createDate}`
+           
         }
         if(response.status=="400"){
             document.querySelector('.error-message').innerHTML="重覆的title名，請重新填寫"

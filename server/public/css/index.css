@@ -18,7 +18,7 @@ body{
 }
 
 .header__container{
-    padding-top: 40px;
+    padding-top: 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -430,6 +430,7 @@ body{
     align-items: center;
     box-shadow: 0px 0px 3px 3px rgba(0,0,0,.7);
     border-radius: 10px;
+    background-color: #fff;
 }
 
 .welcomePic{
@@ -445,7 +446,7 @@ body{
 }
 
 .welcomeTxt{
-    transform: translateY(-50px);
+  
     font-size: 24px;
     font-weight: 700;
 }
@@ -461,8 +462,12 @@ body{
 
 .post{
 
-    width: 400px;
+    width: 600px;
+    height: 420px;
+    background-color: #fff;
+    display: block;
     position: relative;
+    padding: 30px;
     
 }
 
@@ -480,7 +485,7 @@ body{
 }
 .post__text{
     padding: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 
@@ -514,7 +519,10 @@ body{
     justify-content: center;
 }
 
-
+.thread__title{
+    margin-bottom: 10px;
+    width: 300px;
+}
 
 
 .thread-section{
@@ -523,7 +531,7 @@ body{
 
 .thread{
     display: flex;
-    border: 1px solid #333;
+    outline: 1px solid #cad8ff;
     justify-content: flex-start;
     height: 100px;
     align-items: center;
@@ -531,6 +539,8 @@ body{
     margin-top: 50px;
     position: relative;
     transition: .3s;
+    background-color: #fff;
+    
 }
 
 .thread .link{
@@ -541,12 +551,17 @@ body{
     top: 0;
     left: 0;
     z-index: 1;
+    
 
 }
+
+
 .thread:hover{
-    box-shadow: 0 0 3px 5px #0082c8;
-    cursor: pointer;
+   filter: brightness(.9);
+
 }
+
+
 
 .thread__author, .thread__details{
     margin-left: 30px;
@@ -556,11 +571,11 @@ body{
 .thread__cat{
     padding: 2px 5px;
     vertical-align: middle;
-    border: 1px solid #333;
+    /* border: 1px solid #333; */
     position: absolute;
     top: -12px;
     right: 50px;
-    z-index: 2;
+    z-index: 20;
     background-color: #fff;
     display: flex;
     align-items: center;
@@ -578,4 +593,16 @@ body{
 .error-message{
     text-align: center;
     color: red;
+}
+
+.logout_btn:hover{
+    filter: brightness(.9);
+}
+
+.trigger{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+ 
+   
 }

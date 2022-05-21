@@ -64,7 +64,7 @@ router.put('/',async (req,res)=>{ //使用者登入
         }
         if(await bcrypt.compare(password,user.password)){ 
   
-            const payload = {userId:user.user_id, userName: user.user_name, userEmail:user.email}
+            const payload = {user_id:user.user_id, userName:user.user_name, userEmail:user.email}
             const token = generateAccessToken(payload)
   
             res.cookie('jwt',token,{httpOnly: true, maxAge: maxAge*1000});

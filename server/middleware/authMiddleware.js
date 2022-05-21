@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 require('dotenv').config({path:__dirname+'/.env'})
 const userDB = require('../models/user')
 const cookie = require('cookie')
-
+const crypto = require('crypto')
 
 
 const requireAuth = (req,res,next)=>{
@@ -15,8 +15,9 @@ const requireAuth = (req,res,next)=>{
                 res.redirect('/')
             }else{
             
-                req.user_id = decodeToken.userId
+                res.user_id = decodeToken.user_id
                 res.userName = decodeToken.userName
+                console.log(res.userName)
                 res.locals.user = {userName : decodeToken.userName}
                 next()
             }
@@ -40,8 +41,13 @@ const checkUser =  (req,res,next)=>{
                 res.locals.user=null;
                 next()
             }else{
-        console.log(decodeToken)
-        let user = await userDB.findOne(decodeToken.userId);
+        console.log('checking'+decodeToken.user_id)
+
+
+
+
+
+        let user = await userDB.findOne(decodeToken.user_id);
         // inject the user to our view use res.locals, then we can access it from view
         // if we found that user in the db, what we doing is passing the user into the view,
         // so we can out put it to the view
@@ -74,7 +80,7 @@ function checkToken(cookief){
                     return reject (crypto.randomUUID())
                 }else{
                 
-                    return  resolve(decodeToken.userId)
+                    return  resolve(decodeToken.user_id)
           
                      
                 }

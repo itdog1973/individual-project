@@ -4,12 +4,21 @@ import * as logUtils from './login.js'
 import * as logoutUtils from './logout.js'
 import * as postUtils from './startPost.js'
 import * as postInit  from './post.js'
+import { checkCat } from './cat.js'
+checkCat()
 regUtils.initRegForm()
 logUtils.initLogForm()
 logoutUtils.logout()
 postUtils.openPost()
-postInit.getPost()
+postInit.getObserver()
+// postInit.getPost()
+
 renderCat()
+
+
+
+
+
 
 
 

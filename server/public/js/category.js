@@ -1,6 +1,6 @@
 export function renderCat (){
     let cat = document.querySelector('.category')
-    let catName = ["一般", "上班","科技","愛情","音樂","政治"]
+    let catName = ["一般", "上班","科技","愛情","音樂","遊戲"]
     let catColor = ["#6DD5FA","#f64f59","#a8ff78","#f5af19","#c471ed","#86a8e7"]
 
     for (let i = 0;i<6;i++){
@@ -25,6 +25,7 @@ export function renderCat (){
     
 
         let input = document.createElement('input')
+        input.value=catName[i]
         input.name="cat_radio-group"
         input.type="radio"
         input.id = `radio${i}`

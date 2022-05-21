@@ -6,8 +6,10 @@ const messageDb = require('../models/message')
 
 router.post('/' , async (req,res)=>{
     let tID = req.body.tID
-    const result = await messageDb.selectAll(tID)
-    res.json({test:result})
+    let offset = req.body.offset
+    console.log(tID, offset)
+    const result = await messageDb.selectAll(tID, offset)
+    res.json({message:result})
 })
 
 

@@ -6,12 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>chat room</title>
     <link rel="stylesheet" href="../css/chat.css">
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
+
+
+
+    <canvas id="canvas"></canvas>
+
+    
+    
    <div id="chat">
-       <h2 class="title"></h2>
+       <a class="exit" href="/">
+           <img src="/icon/exit.svg" alt="" class="exit-img">
+       </a>
+       <h1 class="title"></h1>
        <div class="first-message"></div>
        <div id="chat__window">
+           <div class="trigger"></div>
            <div id="chat__message">
            
                
@@ -21,31 +33,71 @@
 
           
        </div>
-                <div class="error-msg"></div>
-                <div class="send">
-                    <% if (user) { %> 
-                    <input type="text" name="message" id="message">
-                    <button id="send__btn">
-                        <img src="/icon/send-svgrepo-com.svg" alt="">
-                    </button> 
-                    <% }  else { %> 
-                        <input type="text" name="message" id="message" disabled placeholder="請登入聊天吧">
-                        <button id="send__btn" disabled>
-                            <img src="/icon/send-svgrepo-com.svg" alt="">
-                        </button> 
-                    <% } %>    
-                </div>
+                
+            <div class="send">
+                <% if (user) { %> 
+                <input type="text" name="message" id="message">
+                
+                <label for="image">
+                    <img src="/icon/camara.svg" class="camara" alt="">
+                </label>
+                <input type="file" multiple class="file" accept="image/*" id="image">
+
+         
+
+                <% }  else { %> 
+                    <input type="text" name="message" id="message" disabled placeholder="請登入聊天吧">
+                
+                <% } %>    
+            </div>
       
- 
+            
+
+         
+            <div class="chat-list is_none">
+                <h3 class="onlineList">在線成員:</h3>
+                <ul class="memberList">
+                
+                </ul>
+            </div>
+
+
+            <div class="btn-switch">
+               
+                <input type="radio" name="chat" id="chat_msg" checked="checked">
+                <label for="chat_msg" class="chat-label">
+                     <img class="chat-img"  src="/icon/chat.svg" alt="">
+                </label>
+            
+
+                <input type="radio" name="chat" id="chat_user">   
+                <label for="chat_user" class="user-label">
+                    <img class="user-img"  src="/icon/user.svg" alt="">
+                    <span class="green-light"></span>
+                </label>
+                
+            
+            
+            
+            </div>
+
+
+
+
       
    </div>
 
-   
+
+
+
+
+    <audio src="/sound/sound.mp3" controls style="display: none;" id="audio"></audio>
 
 
 
    <script src="/socket.io/socket.io.js" ></script>
    <script src="../chat/socket.js"></script>
    <script src="../chat/index.js" type="module" ></script>
+   <!-- <script src="../chat/canvas.js" ></script> -->
 </body>
 </html>

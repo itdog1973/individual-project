@@ -98,24 +98,23 @@ app.get('/thread', checkUser, async (req,res)=>{
 
 
 
-
-
-
+let typing=false;
+let timer=null;
 io.on('connection',async (socket)=>{
     let currentSocketId = socket.id
     // socket.emit("hello","world") // to single user who connect to this server
     console.log(currentSocketId)
 
     let cookief =socket.handshake.headers.cookie;
-    let userId = await checkToken(cookief)
-    console.log(userId)
+    let currentUserId = await checkToken(cookief)
+    console.log(currentUserId)
    
     let foundUser;
    
-
-    socket.on('joinRoom',({author,title,message,username,threadId})=>{
+    //start join room 
+    socket.on('joinRoom',({author,title,message,username,threadId,time})=>{
         
-        console.log(author,title,message,username,threadId,userId)
+        console.log(author,title,message,username,threadId,currentUserId,time)
        
         const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]); ///////show cocket
         console.log(sockets);
@@ -128,16 +127,18 @@ io.on('connection',async (socket)=>{
     
     
         foundUser = usersInRoom.find((user)=>{
-            return user.userId = userId
+            console.log(user.userId)
+            console.log(currentUserId)
+            return user.userId == currentUserId
         })
     
         console.log('is there a same user in the room'+foundUser)
 
-
+        // check if duiplicate 
         if(foundUser){
 
             
-            // socket.emit('duplicate','error')
+     
             
             currentSocketId = foundUser.socketId
             
@@ -167,33 +168,52 @@ io.on('connection',async (socket)=>{
 
 
 
-            const user = userJoin(socket.id,username,title,threadId,userId)
+            const user = userJoin(socket.id,username,title,threadId,currentUserId)
 
                
                 socket.join(user.title)
-
-                console.log(author,message,user.title,user.username,userId)
+                currentSocketId=user.socketId;
 
                 socket.emit('init-load',{
                     author,
                     message,
                     title,
                     user:user.username,
-                    createAt: new Date().toLocaleString()
+                    createAt: time
                 })
 
 
 
 
                 console.log(user) // 印出user details
-                currentSocketId=user.socketId;
+                
+              
+
                 if(user.username != 'guest'){
-                socket.to(user.title).emit('new-user',{
-                    user:user.username,
-                    message:'已進入聊天室',
-                    createAt: new Date().toLocaleString()
-                    
+                    socket.to(user.title).emit('new-user',{
+                        user:user.username,
+                        message:'已進入聊天室',
+                        createAt: new Date().toLocaleString()
                 })
+
+
+                
+
+
+
+                //init a character for user
+
+                
+                if(user.username != 'guest'){
+                    socket.to(user.title).emit('init-char',{
+                        user:user.username,
+                        userId:user.socketId
+                })}
+
+
+
+
+
 
 
                 // send users and room info 
@@ -201,6 +221,9 @@ io.on('connection',async (socket)=>{
                     room:user.title,
                     users: getRoomUsers(user.title)
                 })
+
+
+
                 }
 
 
@@ -210,12 +233,12 @@ io.on('connection',async (socket)=>{
 
 
 
-                const user = userJoin(socket.id,username,title,threadId,userId)
+                const user = userJoin(socket.id,username,title,threadId,currentUserId)
 
                             
                 socket.join(user.title)
 
-                console.log(author,message,user.title,user.username,userId)
+                
 
                 socket.emit('init-load',{
                     author,
@@ -238,10 +261,37 @@ io.on('connection',async (socket)=>{
                 })
 
 
+                //init a character for user
+
+                
+                let roomUsers = getRoomUsers(title)
+                console.log('look',roomUsers)
+
+
+                if(user.username != 'guest'){
+                    io.to(user.title).emit('init-char',{
+                        user:user.username,
+                        userId:user.socketId,
+                        numOfUser : roomUsers.length,
+                      
+
+
+                        
+                })}
+                
+
+                const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
+                console.log(sockets);
+
+
+
+
+
                 // send users and room info 
                 io.to(user.title).emit('roomusers',{
                     room:user.title,
                     users: getRoomUsers(user.title)
+                    
                 })
                 }
 
@@ -261,6 +311,8 @@ io.on('connection',async (socket)=>{
 
             })
 
+            socket.to(user.title).emit('msg-notification','new-msg')
+
 
             let result = await messageDb.insertOne(user.threadId,user.userId, createAt, message)
             console.log(result)
@@ -269,10 +321,39 @@ io.on('connection',async (socket)=>{
     
 
 
-        socket.on('typing',(data)=>{
+        socket.on('typing',(username)=>{
+            typing=true;
             const user = getCurrentUser(socket.id)
-            socket.to(user.title).emit("typing",data)
+            console.log(username)
+            socket.to(user.title).emit("typing",{typing:typing,username:username})
+            clearTimeout(timer)
+            timer= setTimeout(() => {
+                typing=false
+                socket.to(user.title).emit("typing",{typing:typing,username:username})
+            }, 2000);
         })
+
+
+
+
+        // show users 
+
+        // socket.on('newPost',(data)=>{
+
+        //     // const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
+        //     // console.log(sockets);
+
+        //     // const user = getCurrentUser(socket.id)
+        //     // console.log(user)
+            
+        //     const user = getCurrentUser(socket.id)
+     
+        //     socket.to(user.title).emit("newPost",data)
+
+        //     console.log(data)
+        //     // io.to(user.title).emit('newPost',data)
+        // })
+
 
 
 
@@ -283,28 +364,40 @@ io.on('connection',async (socket)=>{
             const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
             console.log(sockets);
             console.log(foundUser)
-         
+            
         
             
-
+                // delete players[socket.id]
+                // console.log('good bye with id'+socket.id);
+                // console.log("current number of payers"+Object.keys(players).length)
+                //  console.log("players dictionary:", players)
                 console.log(currentSocketId)
                 const user= userLeave(currentSocketId);
-                
+                // io.emit('updatePlayers',players)
+                console.log(user)
+                if(user){
+
+
+                    io.to(user.title).emit('leave-message',{
+                        user:user.username,
+                        message:"已離開聊天室",
+                        createAt: new Date().toLocaleString()
+                    });
+    
+    
+    
+                    // send users and room info 
+                    io.to(user.title).emit('roomusers',{
+                        room:user.title,
+                        users: getRoomUsers(user.title)
+                    })
+
+
+
+                }
 
                 
-                io.to(user.title).emit('leave-message',{
-                    user:user.username,
-                    message:"已離開聊天室",
-                    createAt: new Date().toLocaleString()
-                });
-
-
-
-                // send users and room info 
-                io.to(user.title).emit('roomusers',{
-                    room:user.title,
-                    users: getRoomUsers(user.title)
-                })
+               
                 
             
         }

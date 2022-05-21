@@ -2,10 +2,11 @@ const pool = require('../db-config')
 
 
 
+
 const postDB = {}
 
 
-postDB.insertOne = (title, message, user_id, cat)=>{
+postDB.insertOne = (title, message, userId, createDate,cat)=>{
     return new Promise((resolve,reject)=>{
 
 
@@ -20,7 +21,7 @@ postDB.insertOne = (title, message, user_id, cat)=>{
                         })
                         
                     }else{
-                        connection.execute('INSERT INTO threads (title, message, author_id, category) VALUES (?,?,?,?)',[title,message,user_id,cat], (err,results)=>{
+                        connection.execute('INSERT INTO threads (title, message, author_id, create_date, category) VALUES (?,?,?,?,?)',[title,message,userId,createDate,cat], (err,results)=>{
                             if(err){
                                 connection.rollback(()=>{
                                     connection.release()
@@ -70,9 +71,9 @@ postDB.getOne = (title)=>{
 
 
 
-postDB.getAll = ()=>{
+postDB.getAll = (offset)=>{
     return new Promise((resolve,reject)=>{
-        pool.execute('SELECT t1.thread_id, t1.title, t1.message, t1.author_id, t1.category, t1.create_date, t2.user_name FROM threads t1 JOIN users t2 ON t1.author_id = t2.user_id  ORDER BY t1.thread_id DESC LIMIT 10;',(err,results)=>{
+        pool.execute(`SELECT t1.thread_id, t1.title, t1.message, t1.author_id, t1.category, t1.create_date, t2.user_name FROM threads t1 JOIN users t2 ON t1.author_id = t2.user_id  ORDER BY t1.thread_id DESC LIMIT 7 OFFSET ${offset};`,(err,results)=>{
             if(err){
                 return reject(err)
             }else{
@@ -97,6 +98,26 @@ postDB.checkSpecific=(title,message,author)=>{
         })
     })
 }
+
+
+
+postDB.getSpecificAll = (cat,offset)=>{
+    return new Promise((resolve,reject)=>{
+        console.log('what',cat)
+        console.log(offset)
+        pool.execute(`SELECT t1.thread_id, t1.title, t1.message, t1.author_id, t1.category, t1.create_date, t2.user_name FROM threads t1 JOIN users t2 ON t1.author_id = t2.user_id  WHERE category = (?) ORDER BY t1.thread_id DESC LIMIT 7 OFFSET ${offset};`,[cat],(err,results)=>{
+            if(err){
+                console.log(err.message)
+                return reject(err)
+            }else{
+                return resolve(results)
+            }
+        })
+        
+    })
+}
+
+
 
 
 

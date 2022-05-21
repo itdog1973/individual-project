@@ -1,51 +1,82 @@
 
 
-let isLoading = false
+let selected;
 let offset=0;
-let observer;
-export async function  getPost(){
-
-    let endPoint = `/api/posts?limit=6&offset=${offset}`
+let isLoading=false;
+export function checkCat(){
 
 
-    let h = new Headers()
-    h.append('Accept','application/json') 
+    let catGroup = document.querySelector(".category")
 
-    let request = new Request(endPoint,{
-        method:"GET",
-        headers:h
+    catGroup.addEventListener('click',(e)=>{
+        let targetValue = e.target.value
+        if(targetValue == '一般'){
+            selected='一般';
+            getSpecificPost(selected)
+        }else if(targetValue == '上班'){
+            selected='上班';
+            getSpecificPost(selected)
+        }else if(targetValue =='科技'){
+            selected='科技';
+            getSpecificPost(selected)
+        }else if(targetValue == '愛情'){
+            selected='愛情';
+            getSpecificPost(selected)
+        }else if(targetValue == '音樂'){
+            selected='音樂';
+            getSpecificPost(selected)
+        }else if(targetValue == '遊戲'){
+            selected='遊戲';
+            getSpecificPost(selected)
+
+        }
+
     })
 
-    if(isLoading == false){
-        isLoading=true
-        try{
-            console.log(isLoading)
-            const response = await fetch(request)
-            const data = await response.json()
-           
-            offset+=6
-            renderPost(data)
-    
-    
-        }catch(err){
-            console.log(err)
-        }
-    }
-    
 
-
-
+    
 }
 
 
-function renderPost(data){
-    
+
+
+async function getSpecificPost(data){
+
+    console.log(data)
+    offset=0
+    let endPoint = `/api/posts?cat=${data}&offset=${offset}`
+
+
+
+    try{
+        if(isLoading==false){
+            isLoading=true
+            let response = await fetch(endPoint) 
+            let data = await response.json()
+            renderCatPost(data)
+            console.log(data)
+            offset+=6
+        
+        }
+
+      
+
+
+    }catch(err){
+        console.log(err)    
+    }
+
+}
+
+function renderCatPost(data){
+
+    let threadContainer = document.querySelector('.thread-container')
+
+    threadContainer.innerHTML=""
+
     data.forEach(post=>{
 
 
-
-        let threadContainer = document.querySelector('.thread-container')
-        
         let userTag = document.querySelector('.login_user')
         let user;
         if(userTag){
@@ -58,7 +89,7 @@ function renderPost(data){
         thread.className="thread"
         console.log(post)
         let a = document.createElement('a')
-        a.href=`/thread/?title=${post["title"]}&message=${post["message"]}&author=${post["user_name"]}&user=${user}&threadId=${post["thread_id"]}&time=${post["create_date"]}`
+        a.href=`http://localhost:3000/thread/?title=${post["title"]}&message=${post["message"]}&author=${post["user_name"]}&user=${user}&threadId=${post["thread_id"]}&time=${post["create_date"]}`
         a.className='link'
         
         let author = document.createElement('div')
@@ -70,9 +101,7 @@ function renderPost(data){
         let title =document.createElement('h2')
         title.className= "thread__title"
         title.textContent=post["title"]
-        // let message = document.createElement('div')
-        // message.className="thread__message"
-        // message.textContent=post["message"]
+   
         let time = document.createElement('div')
         time.textContent=post["create_date"]
         time.className="thread__time"
@@ -144,34 +173,5 @@ function renderPost(data){
     })
 
     isLoading=false
-    console.log(isLoading)
-    if(data.length<7){
-        observer.unobserve(document.querySelector('.trigger'));
-    }
-}
-
-
-
-export function getObserver(){
-    
-    let options ={
-        root:null,
-        rootMargin: "0px",
-        threshold: .5
-    }
-
-
-    observer = new IntersectionObserver(handleIntersect, options);
-
-
-    observer.observe(document.querySelector('.trigger'))
-    console.log('trigger')
-    function handleIntersect(entries){
-        console.log(entries)
-        console.log(entries[0])
-        if(entries[0].isIntersecting){
-            getPost()
-        }
-    }
-
+   
 }
