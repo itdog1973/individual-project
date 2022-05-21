@@ -1,6 +1,6 @@
 
 
-const socket = io.connect('http://localhost:3000');
+const socket = io.connect();
 
 
 
@@ -33,7 +33,7 @@ const sendBtn = document.getElementById('send__btn')
 const chatMsg = document.getElementById('chat__message')
 const feedback = document.getElementById('feedback')
 const firstMsg = document.querySelector('.first-message')
-chatWindow.scrollTop=chatWindow.scrollHeight
+
 
 // sendBtn.addEventListener('click',()=>{
 //     const message =messageInput.value

@@ -89,7 +89,7 @@ function renderCatPost(data){
         thread.className="thread"
         console.log(post)
         let a = document.createElement('a')
-        a.href=`http://localhost:3000/thread/?title=${post["title"]}&message=${post["message"]}&author=${post["user_name"]}&user=${user}&threadId=${post["thread_id"]}&time=${post["create_date"]}`
+        a.href=`/thread/?title=${post["title"]}&message=${post["message"]}&author=${post["user_name"]}&user=${user}&threadId=${post["thread_id"]}&time=${post["create_date"]}`
         a.className='link'
         
         let author = document.createElement('div')
