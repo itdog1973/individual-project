@@ -28,28 +28,11 @@
            
                
            </div>
-           <div id="feedback"></div>
-
+       
 
           
        </div>
-                
-            <div class="send">
-                <% if (user) { %> 
-                <input type="text" name="message" id="message">
-                
-                <label for="image">
-                    <img src="/icon/camara.svg" class="camara" alt="">
-                </label>
-                <input type="file" multiple class="file" accept="image/*" id="image">
-
-         
-
-                <% }  else { %> 
-                    <input type="text" name="message" id="message" disabled placeholder="請登入聊天吧">
-                
-                <% } %>    
-            </div>
+          
       
             
 
@@ -62,23 +45,44 @@
             </div>
 
 
-            <div class="btn-switch">
-               
-                <input type="radio" name="chat" id="chat_msg" checked="checked">
-                <label for="chat_msg" class="chat-label">
-                     <img class="chat-img"  src="/icon/chat.svg" alt="">
-                </label>
-            
 
-                <input type="radio" name="chat" id="chat_user">   
-                <label for="chat_user" class="user-label">
-                    <img class="user-img"  src="/icon/user.svg" alt="">
-                    <span class="green-light"></span>
-                </label>
+
+                  
+
+            <div class="send-info-section">
+                <div id="feedback"></div>
+
                 
-            
-            
-            
+                <div class="send">
+                    <% if (user) { %>
+                    <input type="text" name="message" id="message">
+                
+                    <label for="image">
+                        <img src="/icon/camara.svg" class="camara" alt="">
+                    </label>
+                    <input type="file" multiple class="file" accept="image/*" id="image">
+                    <% }  else { %>
+                        <input type="text" name="message" id="message" disabled placeholder="請登入聊天吧">
+                
+                    <% } %>
+                </div>
+                <div class="btn-switch">
+                
+                    <input type="radio" name="chat" id="chat_msg" checked="checked">
+                    <label for="chat_msg" class="chat-label">
+                         <img class="chat-img"  src="/icon/chat.svg" alt="">
+                    </label>
+                
+                    <input type="radio" name="chat" id="chat_user">
+                    <label for="chat_user" class="user-label">
+                        <img class="user-img"  src="/icon/user.svg" alt="">
+                        <span class="green-light"></span>
+                    </label>
+                
+                
+                
+                
+                </div>
             </div>
 
 

@@ -4,9 +4,10 @@ const messageDb = require('../models/message')
 
 
 
-router.post('/' , async (req,res)=>{
-    let tID = req.body.tID
-    let offset = req.body.offset
+router.get('/' , async (req,res)=>{
+
+    let tID = req.query.threadId
+    let offset = req.query.offset
     console.log(tID, offset)
     const result = await messageDb.selectAll(tID, offset)
     res.json({message:result})

@@ -66,7 +66,7 @@ async function sendPost(ev){
         let data = await response.json()
         if(response.status=="200"){
             console.log(data)
-            document.location=`/thread?title=${data.title}&message=${data.message}&author=${data.username}&user=${data.username}&threadId=${data.threadId}&time=${data.createDate}`
+            window.location.href=`/thread?title=${data.title}&message=${data.message}&author=${data.username}&user=${data.username}&threadId=${data.threadId}&time=${data.createDate}`
            
         }
         if(response.status=="400"){

@@ -3,6 +3,7 @@
 let selected;
 let offset=0;
 let isLoading=false;
+import { observer } from "./post.js";
 export function checkCat(){
 
 
@@ -55,7 +56,7 @@ async function getSpecificPost(data){
             let data = await response.json()
             renderCatPost(data)
             console.log(data)
-            offset+=6
+            offset+=7
         
         }
 
@@ -98,7 +99,7 @@ function renderCatPost(data){
         let details = document.createElement('div')
         details.className="thread__details"
 
-        let title =document.createElement('h2')
+        let title =document.createElement('h3')
         title.className= "thread__title"
         title.textContent=post["title"]
    
@@ -173,5 +174,8 @@ function renderCatPost(data){
     })
 
     isLoading=false
+    observer.unobserve(document.querySelector('.trigger'));
    
 }
+
+

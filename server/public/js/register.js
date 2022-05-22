@@ -123,9 +123,9 @@ function directLogin(data){
 
 
     let welcomeTimer = document.createElement('h5')
-    welcomeTimer.innerHTML=3
+    welcomeTimer.innerHTML=2
     let welcomeTimerReminder = document.createElement('h4')
-    welcomeTimerReminder.textContent='3秒後自動登入'
+    welcomeTimerReminder.textContent='2秒後自動登入'
     welcomeTxt.textContent="歡迎成為Chill Talk的一份子!"
 
     welcomeMsg.append(welcomePic,welcomeTxt,welcomeTimerReminder,welcomeTimer)

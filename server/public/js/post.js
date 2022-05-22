@@ -2,7 +2,7 @@
 
 let isLoading = false
 let offset=0;
-let observer;
+export let observer;
 export async function  getPost(){
 
     let endPoint = `/api/posts?limit=6&offset=${offset}`
@@ -23,7 +23,7 @@ export async function  getPost(){
             const response = await fetch(request)
             const data = await response.json()
            
-            offset+=6
+            offset+=7
             renderPost(data)
     
     
@@ -67,7 +67,7 @@ function renderPost(data){
         let details = document.createElement('div')
         details.className="thread__details"
 
-        let title =document.createElement('h2')
+        let title =document.createElement('h3')
         title.className= "thread__title"
         title.textContent=post["title"]
         // let message = document.createElement('div')

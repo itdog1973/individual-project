@@ -1,6 +1,7 @@
 let isLoading = false;
 let offset = 0;
 let firstTime = true;
+let observer;
 
 
 export async function getMsg(){
@@ -11,29 +12,29 @@ export async function getMsg(){
       // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
       let threadId = params.threadId
       console.log(threadId)
-      let endPoint = '/api/messages'
-      let h = new Headers()
-      h.append('Content-type', 'application/json')
+      let endPoint = `/api/messages?offset=${offset}&threadId=${threadId}`
+    //   let h = new Headers()
+    //   h.append('Content-type', 'application/json')
 
-      let data =JSON.stringify({tID:`${threadId}`, offset})
-      console.log(data)
+    //   let data =JSON.stringify({tID:`${threadId}`, offset})
+
       
-      let request = new Request(endPoint,{
-          method:'POST',
-          headers: h,
-          body: data
+    //   let request = new Request(endPoint,{
+    //       method:'POST',
+    //       headers: h,
+    //       body: data
 
-      })
+    //   })
 
 
       try{
         if(isLoading == false){
             isLoading = true
-            let result = await fetch(request)
+            let result = await fetch(endPoint)
             let data = await result.json()
             isLoading=false
             console.log(data)
-            offset +=10
+            offset +=12
             console.log(offset)
             console.log(data)
             if(firstTime==true){
@@ -96,7 +97,9 @@ function renderMsg(data){
             chatWindow.scrollTop=chatWindow.scrollHeight
         }
         
-     
+        if(data.length<10){
+            observer.unobserve(document.querySelector('.trigger'))
+        }
  
 
 
@@ -139,12 +142,36 @@ export function renderHistoryMsg(data){
         chatContainer.insertBefore(msgBlock,messageTop)
 
 
-        // chatContainer.appendChild(msgBlock)
+     
     })
-
-    
    
+    
+    if(data.length<10){
+        observer.unobserve(document.querySelector('.trigger'))
+    }
+    chatWindow.scrollTop=50
    
 
 
 }
+
+export function setObserver(){
+
+    let options ={
+        root:null,
+        rootMargin: "0px",
+        threshold: 0.5
+    }
+    
+    observer = new IntersectionObserver(handleIntersect, options);
+    observer.observe(document.querySelector('.trigger'))
+    
+    function handleIntersect(entries){
+        if(entries[0].isIntersecting){
+            getMsg()
+        }
+    }
+
+
+}
+

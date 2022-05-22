@@ -49,7 +49,7 @@ messageDb.insertOne = (threadId, userId, time,message)=>{
 
 messageDb.selectAll = (threadId, offset)=>{
     return new Promise((resolve,reject)=>{
-        pool.execute(`select post_id,thread_id, message, create_date, user_name from posts join users on posts.user_id = users.user_id where posts.thread_id = (?) order by post_id desc limit 10 offset ${offset};`,[threadId],(err,results)=>{
+        pool.execute(`select post_id,thread_id, message, create_date, user_name from posts join users on posts.user_id = users.user_id where posts.thread_id = (?) order by post_id desc limit 12 offset ${offset};`,[threadId],(err,results)=>{
             if(err){
                 return reject(err)
             }else{
