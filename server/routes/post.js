@@ -5,6 +5,7 @@ const postDB = require('../models/post')
 
 
 
+
 router.post('/', requireAuth , async (req,res)=>{
 
     console.log(req.body.cat, req.body.message, req.body.title)
@@ -81,6 +82,18 @@ router.get('/', async (req,res)=>{
 
 
     }
+})
+
+router.get('/:keyword',async (req,res)=>{
+
+
+    let keyword = req.params.keyword;
+    console.log(keyword)
+
+    let result = await postDB.searchPost(keyword)
+    res.json(result)
+
+
 })
 
 

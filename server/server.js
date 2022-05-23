@@ -33,7 +33,7 @@ app.use('/api/posts',postAPI)
 app.use('/api/messages',msgAPI)
 
 const { userJoin, getCurrentUser, userLeave, getRoomUsers}   = require('./socket-utils/user-util');
-const { disconnect } = require('process');
+
 
 
 
@@ -116,7 +116,7 @@ io.on('connection',async (socket)=>{
         
         console.log(author,title,message,username,threadId,currentUserId,time)
        
-        const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]); ///////show cocket
+        const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]); ///////show socket
         console.log(sockets);
         let usersInRoom = getRoomUsers(title)
 
@@ -168,7 +168,7 @@ io.on('connection',async (socket)=>{
 
 
 
-            const user = userJoin(socket.id,username,title,threadId,currentUserId)
+            const user = userJoin(socket.id,username,title,threadId,currentUserId,time)
 
                
                 socket.join(user.title)
@@ -245,7 +245,7 @@ io.on('connection',async (socket)=>{
                     message,
                     title,
                     user:user.username,
-                    createAt: new Date().toLocaleString()
+                    createAt: time
                 })
 
 

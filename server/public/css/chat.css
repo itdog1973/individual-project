@@ -129,6 +129,8 @@ body{
 
 .user_msg{
     color: #fff;
+    word-break: break-all;
+    width:350px;
     
 }
 

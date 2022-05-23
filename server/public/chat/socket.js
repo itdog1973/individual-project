@@ -58,12 +58,6 @@ messageInput.addEventListener('keydown',(e)=>{
     if (e.key === 'Enter'){
         const message =messageInput.value
         
-
-
-
-
-
-
         if(message){
             socket.emit('chat-message',message)
       
@@ -353,92 +347,71 @@ function resizeCanvas(){
 
 
 let imageload=0;
-// let img = new Image();
-// let imgr = new Image();
-// let imgr1 = new Image();
-// let imgr2 = new Image();
-// let imgup = new Image();
-// let imgup1 = new Image();
-// let imgup2 = new Image();
-// let imgd = new Image()
-// let imgd1 = new Image()
-// let imgd2 = new Image()
-// let imgl = new Image()
-// let imgl1 = new Image()
-// let imgl2 = new Image()
-
-
-
-// const userChars = {};
 
 
 
 
 
+let img = new Image();
+img.src = '/characters/mr0.png'
+// img.addEventListener('load',count)
 
-    
+
+// create image
+let imgr = new Image();
+imgr.src = '/characters/mr.png'
+// imgr.addEventListener('load',count)
+
+let imgr1 = new Image();
+imgr1.src = '/characters/mr1.png'
+// imgr1.addEventListener('load',count)
+
+let imgr2 = new Image();
+imgr2.src = '/characters/mr2.png'
+// imgr2.addEventListener('load',count)
 
 
-    let img = new Image();
-    img.src = '/characters/mr0.png'
-    // img.addEventListener('load',count)
-    
-    
-    // create image
-    let imgr = new Image();
-    imgr.src = '/characters/mr.png'
-    // imgr.addEventListener('load',count)
-    
-    let imgr1 = new Image();
-    imgr1.src = '/characters/mr1.png'
-    // imgr1.addEventListener('load',count)
-    
-    let imgr2 = new Image();
-    imgr2.src = '/characters/mr2.png'
-    // imgr2.addEventListener('load',count)
-    
-    
-    let imgup = new Image();
-    imgup.src = '/characters/mb.png'
-    // imgup.addEventListener('load',count)
-    
-    
-    let imgup1 = new Image();
-    imgup1.src = '/characters/mb1.png'
-    // imgup1.addEventListener('load',count)
-    
-    let imgup2 = new Image();
-    imgup2.src = '/characters/mb2.png'
-    // imgup2.addEventListener('load',count)
-    
-    
-    let imgd = new Image()
-    imgd.src = '/characters/mf.png'
-    // imgd.addEventListener('load',count)
-    
-    let imgd1 = new Image()
-    imgd1.src = '/characters/mf1.png'
-    // imgd1.addEventListener('load',count)
-    
-    let imgd2 = new Image()
-    imgd2.src = '/characters/mf2.png'
-    // imgd2.addEventListener('load',count)
-    
-    
-    
-    let imgl = new Image()
-    imgl.src = '/characters/ml.png'
-    // imgl.addEventListener('load',count)
-    
-    
-    let imgl1 = new Image()
-    imgl1.src = '/characters/ml1.png'
-    // imgl1.addEventListener('load',count)
-    
-    
-    let imgl2 = new Image()
-    imgl2.src = '/characters/ml2.png'
-    // imgl2.addEventListener('load',count)
+let imgup = new Image();
+imgup.src = '/characters/mb.png'
+// imgup.addEventListener('load',count)
+
+
+let imgup1 = new Image();
+imgup1.src = '/characters/mb1.png'
+// imgup1.addEventListener('load',count)
+
+let imgup2 = new Image();
+imgup2.src = '/characters/mb2.png'
+// imgup2.addEventListener('load',count)
+
+
+let imgd = new Image()
+imgd.src = '/characters/mf.png'
+// imgd.addEventListener('load',count)
+
+let imgd1 = new Image()
+imgd1.src = '/characters/mf1.png'
+// imgd1.addEventListener('load',count)
+
+let imgd2 = new Image()
+imgd2.src = '/characters/mf2.png'
+// imgd2.addEventListener('load',count)
+
+
+
+let imgl = new Image()
+imgl.src = '/characters/ml.png'
+// imgl.addEventListener('load',count)
+
+
+let imgl1 = new Image()
+imgl1.src = '/characters/ml1.png'
+// imgl1.addEventListener('load',count)
+
+
+let imgl2 = new Image()
+imgl2.src = '/characters/ml2.png'
+// imgl2.addEventListener('load',count)
     
 
 
@@ -455,21 +428,6 @@ socket.on('init-char',(data)=>{
 
 
 
-
-// function count(){
-    
-//     imageload++
-//     console.log(imageload)
-
-//     if(imageload==13){
-
-
-//         update()          
-
-//     }
-//     // socket.emit('newPlayer',{x:player.x, y:player.y })
-
-// }
 
 
  
@@ -517,7 +475,7 @@ function clear(){
 
 
 
-function update(x,y){
+function update(){
 
     clear()
 
@@ -532,7 +490,7 @@ function update(x,y){
 
 
 
-function updatePosition(x,y){
+function updatePosition(){
 
 
     socket.emit('newPost',{img,playerX:x,playerY:y,playerW:player.w,playerH:player.h})
@@ -545,7 +503,7 @@ function newPost(){
 
     player.x += player.dx;
     player.y += player.dy
-    // updatePosition( player.x, player.y)
+
 
 
     detectWalls();
@@ -593,7 +551,7 @@ function moveRight(){
 
 
     player.dx = player.speed
-
+    updatePosition()
             
  
 }
@@ -601,16 +559,19 @@ function moveRight(){
 
 function moveLeft(){
     player.dx = -player.speed
+    updatePosition()
 }
 
 function moveUp(){
     player.dy= -player.speed
+    updatePosition()
 }
 
 function moveDown(){
 
 
     player.dy = player.speed
+    updatePosition()
  
  
 
@@ -717,6 +678,7 @@ function keyUp(e){
         img.src = imgr.src
         player.dx=0;
         player.dy=0;
+        updatePosition()
     }
 
     if(
@@ -728,6 +690,7 @@ function keyUp(e){
         player.dx=0;
         player.dy=0;
         img.src = imgl.src
+        updatePosition()
     }
 
     if(
@@ -739,6 +702,7 @@ function keyUp(e){
         player.dx=0;
         player.dy=0;
         img.src = imgup.src
+        updatePosition()
     }
 
     if(
@@ -751,6 +715,7 @@ function keyUp(e){
         player.dx=0;
         player.dy=0;
         img.src = imgd.src
+        updatePosition()
 
     }
 
