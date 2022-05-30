@@ -41,7 +41,7 @@ const checkUser =  (req,res,next)=>{
                 res.locals.user=null;
                 next()
             }else{
-        console.log('checking'+decodeToken.user_id)
+     console.log('checking'+decodeToken.user_id)
 
 
 
@@ -94,8 +94,10 @@ function checkToken(cookief){
    
 }
 
+function isLoggedIn(req,res, next){
+    req.user ? next() : res.sendStatus(401)
+}
 
 
 
-
-module.exports={requireAuth, checkUser, checkToken };
+module.exports={requireAuth, checkUser, checkToken,isLoggedIn };

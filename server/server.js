@@ -22,18 +22,41 @@ app.set('views', path.join(__dirname,'/views'))
 app.use(express.static(path.join(__dirname,'/public')))
 app.use(express.json())
 app.use(express.urlencoded());
-const {checkUser, requireAuth, checkToken} = require('./middleware/authMiddleware')
+const {checkUser, requireAuth, checkToken, isLoggedIn} = require('./middleware/authMiddleware')
 app.use(cookieParser());
 const userAPI = require('./routes/user.js');
 const postAPI = require('./routes/post.js')
 const msgAPI = require('./routes/message.js')
-
+const authAPI = require('./routes/auth.js')
 app.use('/api/users',userAPI)
 app.use('/api/posts',postAPI)
 app.use('/api/messages',msgAPI)
+app.use('/auth',authAPI)
 
 const { userJoin, getCurrentUser, userLeave, getRoomUsers}   = require('./socket-utils/user-util');
+const passport =require('passport');
+require('./middleware/passport-set')
 
+const cookieSession = require('cookie-session')
+app.use(cookieSession({
+    name: 'chill-talk session',
+    keys: [process.env.COOKIE_SECRET],
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }))
+
+// const session = require('express-session')
+// app.use(session({
+//     secret: process.env.COOKIE_SECRET,
+//     resave: false,
+//     saveUninitialized: false
+// }))
+
+
+
+// Initializes passport and passport sessions
+app.use(passport.initialize());
+app.use(passport.session());
 
 
 
@@ -41,23 +64,20 @@ const { userJoin, getCurrentUser, userLeave, getRoomUsers}   = require('./socket
 
 app.get('*', checkUser);
 // app.get('*', checkUser);
-app.get('/', (req,res)=>{
+app.get('/',  (req,res)=>{
+ 
     res.render('index')
 })
 
 
-// app.post('/thread', requireAuth, async (req,res)=>{
-//     console.log(req.body.cat, req.body.message, req.body.title)
-//     try{
-//         const result = await postDB.insertOne(req.body.title,req.body.message,req.user_id,req.body.cat)
-//         res.render('chat', {title: req.body.title, message: req.body.message})
-//     }catch(err){
-//         res.status(500).send({
-//                         error:err.message
-//                     })
-//     }
 
-// })
+
+
+
+
+
+
+
 
 
 app.get('/thread', checkUser, async (req,res)=>{
@@ -81,8 +101,6 @@ app.get('/thread', checkUser, async (req,res)=>{
         res.redirect('/')
     }
 
-
-
    
 })
 
@@ -95,9 +113,7 @@ app.get('/thread', checkUser, async (req,res)=>{
 
 
 
-
-
-
+let plyers = []
 let typing=false;
 let timer=null;
 io.on('connection',async (socket)=>{
@@ -168,7 +184,7 @@ io.on('connection',async (socket)=>{
 
 
 
-            const user = userJoin(socket.id,username,title,threadId,currentUserId,time)
+            const user = userJoin(currentSocketId,username,title,threadId,currentUserId,time)
 
                
                 socket.join(user.title)
@@ -205,9 +221,9 @@ io.on('connection',async (socket)=>{
 
                 
                 if(user.username != 'guest'){
-                    socket.to(user.title).emit('init-char',{
-                        user:user.username,
-                        userId:user.socketId
+                    socket.emit('init-char',{
+                        id:currentSocketId,
+                        plyers
                 })}
 
 
@@ -233,7 +249,7 @@ io.on('connection',async (socket)=>{
 
 
 
-                const user = userJoin(socket.id,username,title,threadId,currentUserId)
+                const user = userJoin(currentSocketId,username,title,threadId,currentUserId)
 
                             
                 socket.join(user.title)
@@ -268,16 +284,20 @@ io.on('connection',async (socket)=>{
                 console.log('look',roomUsers)
 
 
-                if(user.username != 'guest'){
-                    io.to(user.title).emit('init-char',{
-                        user:user.username,
-                        userId:user.socketId,
-                        numOfUser : roomUsers.length,
                       
-
-
-                        
+                if(user.username != 'guest'){
+                    socket.emit('init-char',{
+                        id:currentSocketId,
+                        plyers
                 })}
+
+
+
+                
+
+
+
+
                 
 
                 const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
@@ -299,31 +319,63 @@ io.on('connection',async (socket)=>{
         
     })
 
+       
+
+
 
         let createAt = new Date().toLocaleString()
         //listen for chatmessage
         socket.on('chat-message', async (message)=>{
-            const user = getCurrentUser(socket.id)
-            io.to(user.title).emit('chat-message',{
-                message,
-                user:user.username,
-                createAt
+            console.log('trigger')
+            if(message.hasOwnProperty('imgArray')){
+                console.log(message['imgArray'])
+                if(message.hasOwnProperty('message')){
+                    const user = getCurrentUser(currentSocketId)
+                    io.to(user.title).emit('chat-message',{
+                        message:message['message'],
+                        images:message['imgArray'],
+                        user:user.username,
+                        createAt
+    
+                    })
+                socket.to(user.title).emit('msg-notification','new-msg')
+                }else{
+                    const user = getCurrentUser(currentSocketId)
+                    io.to(user.title).emit('chat-message',{
+                        images:message['imgArray'],
+                        user:user.username,
+                        createAt
+    
+                    })
+                socket.to(user.title).emit('msg-notification','new-msg')
+                }
+            
 
-            })
+            }else{
+                const user = getCurrentUser(currentSocketId)
+                io.to(user.title).emit('chat-message',{
+                    message,
+                    user:user.username,
+                    createAt
+
+                })
+         
 
             socket.to(user.title).emit('msg-notification','new-msg')
 
 
             let result = await messageDb.insertOne(user.threadId,user.userId, createAt, message)
             console.log(result)
-
+            }
+            
+ 
         })
     
 
 
         socket.on('typing',(username)=>{
             typing=true;
-            const user = getCurrentUser(socket.id)
+            const user = getCurrentUser(currentSocketId)
             console.log(username)
             socket.to(user.title).emit("typing",{typing:typing,username:username})
             clearTimeout(timer)
@@ -336,24 +388,26 @@ io.on('connection',async (socket)=>{
 
 
 
-        // show users 
+        socket.on('new-player', obj => {
+            console.log('new player id',currentSocketId)
+            const user = getCurrentUser(currentSocketId)
+            plyers.push(obj);
+            socket.to(user.title).emit('new-player', obj)});
 
-        // socket.on('newPost',(data)=>{
+        socket.on('move-player',  dir => {
+            const user = getCurrentUser(currentSocketId)
 
-        //     // const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
-        //     // console.log(sockets);
+            console.log('moveing user id',user )
+            console.log(getRoomUsers(user.title))
+            socket.to(user.title).emit('move-player', {id:currentSocketId, dir})
+        });
 
-        //     // const user = getCurrentUser(socket.id)
-        //     // console.log(user)
-            
-        //     const user = getCurrentUser(socket.id)
-     
-        //     socket.to(user.title).emit("newPost",data)
-
-        //     console.log(data)
-        //     // io.to(user.title).emit('newPost',data)
-        // })
-
+        socket.on('stop-player',  dir =>{
+            const user = getCurrentUser(currentSocketId)
+            console.log('stop player id', user)
+            socket.to(user.title).emit('stop-player', {id:currentSocketId, dir})
+    });
+                    
 
 
 
@@ -377,20 +431,29 @@ io.on('connection',async (socket)=>{
                 console.log(user)
                 if(user){
 
+                    io.to(user.title).emit('remove-player', socket.id);
+                    plyers = plyers.filter(v => v.id !== socket.id);
 
-                    io.to(user.title).emit('leave-message',{
-                        user:user.username,
-                        message:"已離開聊天室",
-                        createAt: new Date().toLocaleString()
-                    });
-    
-    
-    
-                    // send users and room info 
+
+
+                    if(user.username != 'guest'){
+                        io.to(user.title).emit('leave-message',{
+                            user:user.username,
+                            message:"已離開聊天室",
+                            createAt: new Date().toLocaleString()
+                        });
+
+                           // send users and room info 
                     io.to(user.title).emit('roomusers',{
                         room:user.title,
                         users: getRoomUsers(user.title)
                     })
+                    }
+                   
+    
+    
+    
+                 
 
 
 

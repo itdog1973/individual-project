@@ -1,5 +1,6 @@
 
-
+import Player from './player.js'
+import controls from './controls.js'
 const socket = io.connect();
 
 
@@ -33,16 +34,10 @@ const sendBtn = document.getElementById('send__btn')
 const chatMsg = document.getElementById('chat__message')
 const feedback = document.getElementById('feedback')
 const firstMsg = document.querySelector('.first-message')
+const preview = document.querySelector('.preview-container');
+let files;
 
 
-// sendBtn.addEventListener('click',()=>{
-//     const message =messageInput.value
- 
-//     socket.emit('chat-message',message)
-
-
-//     messageInput.value= ""
-// })
 
 
 messageInput.addEventListener('keypress',(e)=>{
@@ -53,22 +48,92 @@ messageInput.addEventListener('keypress',(e)=>{
 
 
 
-messageInput.addEventListener('keydown',(e)=>{
+
+inpFile.addEventListener('change',(e)=>{
+ 
+    files =document.querySelector('.file').files;
+   
+
+    function readAndPreview(file){
     
-    if (e.key === 'Enter'){
-        const message =messageInput.value
-        
-        if(message){
-            socket.emit('chat-message',message)
-      
-            messageInput.value= ""
-            // e.target.blur()
-        }
+        let reader = new FileReader();
+
+        reader.addEventListener('load',()=>{
+            let image = new Image();
+            image.src=reader.result
+            preview.appendChild(image);
+        })
+
+        reader.readAsDataURL(file)
+    }
+
+
+    if(files){
+        console.log(files);
+        [].forEach.call(files, readAndPreview)
     }
 
 })
 
 
+
+
+
+
+
+messageInput.addEventListener('keydown',async (e)=>{
+   
+        const message =messageInput.value
+        files =document.querySelector('.file').files;
+        let imgArray=[]
+    if (e.key === 'Enter'){
+           
+        if(files.length !== 0){
+          
+           
+
+            for(const file of files){
+                const result = await readImg(file)
+                imgArray.push({img:result})
+            }
+
+            
+            if(message !== null){
+                let data = {imgArray, message}
+                console.log(data)
+                socket.emit('chat-message',data)
+                preview.innerHTML=''
+                messageInput.value= ""
+            }else{
+                let data = {imgArray}
+                console.log(data)
+                socket.emit('chat-message',data)
+                preview.innerHTML=''
+            
+            }
+
+
+           
+
+            
+        }else{
+          
+            socket.emit('chat-message',message)
+            messageInput.value= ""
+        }
+     
+    }})
+
+
+    function readImg(file){
+        return new Promise((resolve)=>{
+            let reader = new FileReader()
+            reader.readAsDataURL(file)
+            reader.addEventListener('load',()=>{
+                resolve(reader.result)
+            })
+        })
+    }
 
 
 
@@ -191,12 +256,18 @@ function appendfirstMsg(data){
 
 function appendMsg(data){
     
+    
+    
+    let msgBlock = document.createElement('div')
+    msgBlock.className="msg_block"
+
+
+
     let info = document.createElement('span')
     info.textContent=`${data.user}`
     info.className="user_info"
 
     let time = document.createElement('span')
-
     time.textContent= `${data.createAt}`
     time.className="user_time"
 
@@ -204,14 +275,49 @@ function appendMsg(data){
     infoBlock.className="info_block"
     infoBlock.append(info,time)
 
-    let msg = document.createElement('p')
-    msg.textContent=`${data.message}`
-    msg.className="user_msg"
+    msgBlock.appendChild(infoBlock)
+
+
+    if(data.hasOwnProperty('message')){
+       
     
-    let msgBlock = document.createElement('div')
-    msgBlock.className="msg_block"
-    msgBlock.append(infoBlock,msg)
- 
+        let msg = document.createElement('p')
+        msg.textContent=`${data.message}`
+        msg.className="user_msg"
+        msgBlock.append(msg)
+    }
+    
+   
+
+    if(data.hasOwnProperty('images')){
+        
+
+        let pictures = data['images']
+        let imgContainer = document.createElement('div')
+        imgContainer.className='usr-images-container'
+        pictures.forEach(p=>{
+
+        let image = document.createElement('img')
+        image.className='usr-image'
+
+        image.src = p['img']
+
+        imgContainer.appendChild(image)
+
+        })
+
+
+        msgBlock.append(imgContainer)
+    }
+
+   
+       
+    
+
+
+
+
+
     chatMsg.append(msgBlock)
     chatWindow.scrollTop=chatWindow.scrollHeight
 
@@ -251,9 +357,7 @@ function notificationSound(){
 
 // add room name to dom
 
-function outputRoomName(room){
 
-}
 
 socket.on('leave-message',(data)=>{
     appendjoinMsg(data)
@@ -261,32 +365,8 @@ socket.on('leave-message',(data)=>{
 
 
 
-// if(Notification.permission === "granted"){
-//     showNotification(data)
-// } else if (Notification.permission !== "denied"){
-//     Notification.requestPermission().then(permission=>{
-//         if(permission ==="granted"){
-//             showNotification(data)
-//         }
-    
-//     });
-// }
 
 
-function showNotification (data){
-
-
-    const notification = new Notification("New message from Chill Talk!",{
-
-        body:`${data.username}已經上線了`,
-        icon:``
-
-    });
-
-    notification.onclick=(e)=>{
-
-    }
-}
 
 const userList = document.querySelector('.memberList');
 function outputRoomUsers(users){
@@ -339,14 +419,9 @@ function resizeCanvas(){
 
 
 
-// socket.on('newPost',(data)=>{
-//     update(data.playerX,data.playerY)
-// })
 
 
 
-
-let imageload=0;
 
 
 
@@ -416,10 +491,52 @@ imgl2.src = '/characters/ml2.png'
 
 
 
-socket.on('init-char',(data)=>{
-    let numOfUser = data['numOfUser']
-    console.log(numOfUser)
-    update()
+let players = []
+socket.on('init-char',({id, plyers})=>{
+    console.log(id)
+    const player = new Player({ id })
+    controls(player, socket)
+    console.log(player.id)
+
+    socket.emit('new-player', player);
+    socket.on('new-player', obj => players.push(new Player(obj)));
+
+    socket.on('move-player', ({id, dir}) =>{
+
+        let user = players.find(v => {
+            return  v.id === id
+        })
+        console.log(user.id)
+        user.move(dir)
+
+
+    })
+    
+    socket.on('stop-player', ({id, dir}) =>{
+        let user = players.find(v => {
+            return v.id === id})
+            console.log(user.id)
+            user.stop(dir)
+    })
+
+
+    players = plyers.map(v => new Player(v)).concat(player);
+
+
+    socket.on('remove-player',id => players = players.filter( v => v.id !== id));
+
+    const draw = ()=>{
+        console.log(players)
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        players.forEach(v=>{
+          
+            v.draw(ctx)
+            v.newPost()
+        })
+
+        // requestAnimationFrame(draw)
+    }
+    draw()
 })
 
 
@@ -430,310 +547,3 @@ socket.on('init-char',(data)=>{
 
 
 
- 
-
-
-
-
-
-// create charter
-const player = {
-
-    w:60,
-    h:80,
-    x:20,
-    y:200,
-    speed:4,
-    dx:0,
-    dy:0
-
-}
-
-
-
-
-
-
-
-// put the charvter in one canvers
-function drawPlayer(){
- 
-    // while (n<numOfUser){
-        ctx.drawImage(img,player.x,player.y,player.w,player.h)
-    //     n++
-    // }
-   
-
-}
-
-
-
-function clear(){
-    ctx.clearRect(0,0,canvas.width, canvas.height);
-}
-
-
-
-
-function update(){
-
-    clear()
-
-    drawPlayer();
-
-    newPost();
-
-    requestAnimationFrame(update)
-
-
-}
-
-
-
-function updatePosition(){
-
-
-    socket.emit('newPost',{img,playerX:x,playerY:y,playerW:player.w,playerH:player.h})
-
-
-}
-
-
-function newPost(){
-
-    player.x += player.dx;
-    player.y += player.dy
-
-
-
-    detectWalls();
-}
-
-
-
-function detectWalls(){
-
-    //left wall
-    if(player.x<0){
-        player.x=0;
-    }
-
-    //right wall
-    if(player.x + player.w > canvas.width){
-        console.log(canvas.width)
-        player.x=canvas.width-player.w
-    }
-
-    
-    if(player.y < 0){
-        player.y=0
-    }
-
-    if(player.y + player.h > canvas.height){
-        player.y=canvas.height-player.h
-    }
-
-
-}
-
-
-
-
-
-
-
-
-
-//
-
-
-function moveRight(){
-
-
-    player.dx = player.speed
-    updatePosition()
-            
- 
-}
-
-
-function moveLeft(){
-    player.dx = -player.speed
-    updatePosition()
-}
-
-function moveUp(){
-    player.dy= -player.speed
-    updatePosition()
-}
-
-function moveDown(){
-
-
-    player.dy = player.speed
-    updatePosition()
- 
- 
-
-}
-
-
-
-
-
-
-// img.onload =moveRight()
-
-function keyDown(e){
-
-
-    if(e.key=== 'ArrowRight' || e.key==='Right'){
-    
-        if(img.src != imgr.src && img.src != imgr1.src && img.src != imgr2.src){
-            img.src = imgr.src
-        }else if(img.src == imgr.src){
-   
-            img.src = imgr1.src
-            moveRight()
-        }else if( img.src == imgr1.src){
-     
-            img.src = imgr2.src
-            moveRight()
-        }else if( img.src == imgr2.src){
-            img.src = imgr1.src
-            moveRight()
-        }
-        
-        
-    }else if(e.key=== 'ArrowLeft' || e.key==='Left'){
-
-
-
-        if (img.src != imgl.src && img.src != imgl1.src && img.src != imgl2.src){
-            img.src = imgl.src
-        }else if(img.src == imgl.src){
-   
-            img.src = imgl1.src
-            moveLeft()
-        }else if( img.src == imgl1.src){
-     
-            img.src = imgl2.src
-            moveLeft()
-        }else if( img.src == imgl2.src){
-            img.src = imgl1.src
-            moveLeft()
-        }
-        
-   
-    }else if(e.key=== 'ArrowUp' || e.key==='Up'){
-        if (img.src != imgup.src && img.src != imgup1.src && img.src != imgup2.src){
-            img.src = imgup.src
-        }else if(img.src == imgup.src){
-   
-            img.src = imgup1.src
-            moveUp()
-        }else if( img.src == imgup1.src){
-     
-            img.src = imgup2.src
-            moveUp()
-        }else if( img.src == imgup2.src){
-            img.src = imgup1.src
-            moveUp()
-        }
-      
-      
-  
-    }else if(e.key === 'ArrowDown' || e.key==='Down'){
-
-        if (img.src != imgd.src && img.src != imgd1.src && img.src != imgd2.src){
-            img.src = imgd.src
-        }else if(img.src == imgd.src){
-   
-            img.src = imgd1.src
-            moveDown()
-        }else if( img.src == imgd1.src){
-     
-            img.src = imgd2.src
-            moveDown()
-        }else if( img.src == imgd2.src){
-            img.src = imgd1.src
-            moveDown()
-        }
-        
-    }
-}
-
-
-
-
-
-
-function keyUp(e){
-
-    if(
-
-        e.key == 'Right'||e.key == 'ArrowRight' 
-
-    ){
-        img.src = imgr.src
-        player.dx=0;
-        player.dy=0;
-        updatePosition()
-    }
-
-    if(
-
-        
-        e.key == 'Left'||e.key == 'ArrowLeft'
-    )
-    {
-        player.dx=0;
-        player.dy=0;
-        img.src = imgl.src
-        updatePosition()
-    }
-
-    if(
-
-    
-        e.key == 'Up'|| e.key == 'ArrowUp'
-
-    ){
-        player.dx=0;
-        player.dy=0;
-        img.src = imgup.src
-        updatePosition()
-    }
-
-    if(
-
-        
-        e.key == 'Down'||e.key == 'ArrowDown'
-
-    ){
-
-        player.dx=0;
-        player.dy=0;
-        img.src = imgd.src
-        updatePosition()
-
-    }
-
-
-
-
-
-
-
-
-
-
-}
-
-
-
-
-
-
-document.addEventListener('keydown', keyDown);
-document.addEventListener('keyup', keyUp);

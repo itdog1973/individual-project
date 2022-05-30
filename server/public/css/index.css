@@ -298,8 +298,12 @@ body{
     align-items: center;
     cursor: pointer;
     transition: .3s;
+    text-decoration: none;
 }
 
+.google:visited{
+    color: inherit;
+}
 
 .google:hover{
     background-color: #65C7F7;

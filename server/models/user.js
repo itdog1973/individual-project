@@ -38,29 +38,19 @@ userDB.insertOne = (username,password,email)=>{
                         
                         }else{
                            
-                            connection.execute('INSERT INTO user_credentials (authentication_type_id,user_id) VALUES (?,?);',[1, results.insertId],(err)=>{
+                            console.log(results)
+                            connection.commit((err)=>{
                                 if(err){
                                     connection.rollback(()=>{
                                         connection.release()
-                                        return reject(err)
+                                        return reject (err)
                                     })
-                                   
+                         
                                 }else{
-                                    console.log(results)
-                                    connection.commit((err)=>{
-                                        if(err){
-                                            connection.rollback(()=>{
-                                                connection.release()
-                                                return reject (err)
-                                            })
-                                 
-                                        }else{
-                    
-                                            connection.release()
-                                   
-                                            return resolve(results.insertId)
-                                        }
-                                    })
+            
+                                    connection.release()
+                           
+                                    return resolve(results.insertId)
                                 }
                             })
 
@@ -94,13 +84,93 @@ userDB.loginOne=(email)=>{
 
 
 
+userDB.findGoogleUser=(profileId)=>{
+    return new Promise((resolve,reject)=>{
+        pool.execute('SELECT * FROM authentication WHERE google_id = (?)',[profileId],(err,results)=>{
+            if(err){
+                console.log(err)
+                return reject (err)
+            }else{
+                console.log(results[0])
+                return resolve(results[0])
+            }
+        })
+
+    })
+}
+
+
+userDB.insertGoogleUser=(profileId, name, image)=>{
+    return new Promise((resolve,reject)=>{
+
+        pool.getConnection((err,connection)=>{
+
+            if(err){
+                return reject (err)
+            }
+
+            connection.beginTransaction((err)=>{
+                if(err){
+                    connection.rollback(()=>{
+                        connection.release()
+                        return reject(err)
+                    })
+                }else{
+                    connection.execute('INSERT INTO users (user_name, avatar) VALUES (?,?)',[name, image],(err,results)=>{
+                        if(err){
+                            connection.rollback(()=>{
+                                connection.release()
+                                return reject (err)
+                            })
+                 
+                        }else{
+                            connection.execute('INSERT INTO authentication (user_id,google_id) VALUES (?,?)',[results.insertId,profileId],(err,results)=>{
+                                if(err){
+                                    connection.rollback(()=>{
+                                        connection.release()
+                                        return reject (err)
+                                    })
+                         
+                                }else{
+
+                         
+                                    connection.commit((err)=>{
+                                        if(err){
+                                            connection.rollback(()=>{
+                                                connection.release()
+                                                return reject (err)
+                                            })
+                                 
+                                        }else{
+                    
+                                            connection.release()
+                                            return resolve(results.insertId)
+                                        }
+                                    })
+        
+                                }
+                            })
+                        }
+                    })
+
+
+                }
+            })
+        })
+
+
+
+
+
+    })
+}
 
 
 
 
 userDB.findOne=(id)=>{
     return new Promise((resolve,reject)=>{
-        pool.execute('SELECT * FROM users join user_credentials on users.user_id = user_credentials.user_id WHERE users.user_id = ? ',[id],(err,results)=>{
+        pool.execute('SELECT * FROM users WHERE users.user_id = ? ',[id],(err,results)=>{
             if(err){
                 console.log(err)
                 return reject (err)

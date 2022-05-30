@@ -33,8 +33,6 @@
           
        </div>
           
-      
-            
 
          
             <div class="chat-list is_none">
@@ -55,12 +53,18 @@
                 
                 <div class="send">
                     <% if (user) { %>
-                    <input type="text" name="message" id="message">
+                        <div class="preview-container">
+                          
+                        </div>
+                     
+                        <input type="text" name="message" id="message">
                 
-                    <label for="image">
-                        <img src="/icon/camara.svg" class="camara" alt="">
-                    </label>
-                    <input type="file" multiple class="file" accept="image/*" id="image">
+                        <label for="inpFile">
+                            <img src="/icon/camara.svg" class="camara" alt="">
+                        </label>
+                        <input type="file" multiple class="file" accept="image/*" id="inpFile" >
+       
+
                     <% }  else { %>
                         <input type="text" name="message" id="message" disabled placeholder="請登入聊天吧">
                 
@@ -100,8 +104,8 @@
 
 
    <script src="/socket.io/socket.io.js" ></script>
-   <script src="../chat/socket.js"></script>
+   <script src="../chat/socket.js" type="module"></script>
    <script src="../chat/index.js" type="module" ></script>
-   <!-- <script src="../chat/canvas.js" ></script> -->
+
 </body>
 </html>
