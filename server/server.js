@@ -24,14 +24,17 @@ app.use(express.json())
 app.use(express.urlencoded());
 const {checkUser, requireAuth, checkToken, isLoggedIn} = require('./middleware/authMiddleware')
 app.use(cookieParser());
+const { covertBuf } = require('./s3/s3')
 const userAPI = require('./routes/user.js');
 const postAPI = require('./routes/post.js')
 const msgAPI = require('./routes/message.js')
 const authAPI = require('./routes/auth.js')
+const imgAPI = require('./routes/images.js')
 app.use('/api/users',userAPI)
 app.use('/api/posts',postAPI)
 app.use('/api/messages',msgAPI)
 app.use('/auth',authAPI)
+app.use('/images',imgAPI)
 
 const { userJoin, getCurrentUser, userLeave, getRoomUsers}   = require('./socket-utils/user-util');
 const passport =require('passport');
@@ -330,19 +333,28 @@ io.on('connection',async (socket)=>{
             if(message.hasOwnProperty('imgArray')){
                 console.log(message['imgArray'])
                 if(message.hasOwnProperty('message')){
+                    console.log(message['imgArray'][0]['img'])
+                    const result = await covertBuf(message['imgArray'][0]['img'])
+                    // let images = []
+                    // images.push(`/images/${result}`)
                     const user = getCurrentUser(currentSocketId)
                     io.to(user.title).emit('chat-message',{
                         message:message['message'],
-                        images:message['imgArray'],
+                        images:`/images/${result}`,
                         user:user.username,
                         createAt
     
                     })
+
+                    
+
+
                 socket.to(user.title).emit('msg-notification','new-msg')
                 }else{
                     const user = getCurrentUser(currentSocketId)
+                    const result = await covertBuf(message['imgArray'][0]['img'])
                     io.to(user.title).emit('chat-message',{
-                        images:message['imgArray'],
+                        images:`/images/${result}`,
                         user:user.username,
                         createAt
     

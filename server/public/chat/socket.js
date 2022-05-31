@@ -295,16 +295,16 @@ function appendMsg(data){
         let pictures = data['images']
         let imgContainer = document.createElement('div')
         imgContainer.className='usr-images-container'
-        pictures.forEach(p=>{
+        // pictures.forEach(p=>{
 
         let image = document.createElement('img')
         image.className='usr-image'
 
-        image.src = p['img']
+        image.src = data['images']
 
         imgContainer.appendChild(image)
 
-        })
+        // })
 
 
         msgBlock.append(imgContainer)
