@@ -15,63 +15,33 @@ AWS.config.update({
 let s3Bucket = new AWS.S3( { params: {Bucket: process.env.AWS_BUCKET_NAME} } );
 
 
-async function covertBuf(string){
+async function covertBuf(images){
     
-    
-    return new Promise((resolve,reject)=>{
+   const results = await Promise.all(images.map( async image=>{
 
+    let buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""),'base64') 
+       
+    let id = short.generate()
+    let params = {
+        Key: id,
+        Body: buffer,
+        ContentType: 'image/jpeg',
+        ContentEncoding: 'base64'
+    };
 
-        // string is based 64 image string which is passed from the client side
+    await s3Bucket.putObject(params).promise()
+    return  `https://chill-talk2.s3.ap-northeast-1.amazonaws.com/${id}`
+   }))
+   console.log('finsihed uploading ')
+   return results
 
-        // let buffer = Buffer.from(string.replace(/^data:image\/\w+;base64,/, ""),'base64') 
-        let buffer = Buffer.from(string,'base64') 
-        let id = short.generate()
-        let params = {
-            Key: id,
-            Body: buffer,
-            ContentType: 'image/jpeg'
-        };
-
-        s3Bucket.putObject(params, function(err, data){
-            if (err) { 
-            console.log(err);
-            console.log('Error uploading data: ', data); 
-            return reject(err)
-            } else {
-            console.log('successfully uploaded the image!');
-            return resolve(id)
-            }
-        });
-    })
-
-
-}
-
-
-function getImage(objKey){
-  return new Promise((resolve, reject)=>{
-    let getParams = {
-
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: objKey
-    }
-
-    s3Bucket.getObject(getParams, (err,data)=>{
-        if(err){
-            return reject(err)
-        }
-
-        return resolve(data.Body.toString('base64'))
-    })
-
-  })
-    
 }
 
 
 
 
-module.exports= { covertBuf, getImage }
+
+module.exports= { covertBuf }
 
 
 

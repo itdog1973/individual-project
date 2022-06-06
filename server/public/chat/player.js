@@ -130,15 +130,15 @@ class Player{
         }else if(dir == 'up'){
             if (this.img.src != imgup.src && this.img.src != imgup1.src && this.img.src != imgup2.src){
                 this.img.src = imgup.src
-            }else if(img.src == imgup.src){
+            }else if( this.img.src == imgup.src){
        
                 this.img.src = imgup1.src
                 this.dy= -this.speed
-            }else if( img.src == imgup1.src){
+            }else if( this.img.src == imgup1.src){
          
                 this.img.src = imgup2.src
                 this.dy= -this.speed
-            }else if( img.src == imgup2.src){
+            }else if( this.img.src == imgup2.src){
                 this.img.src = imgup1.src
                 this.dy= -this.speed
             }

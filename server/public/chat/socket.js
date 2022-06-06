@@ -30,11 +30,11 @@ socket.emit('joinRoom',{author,title,message,username,threadId,time})
 
 const chatWindow =  document.getElementById('chat__window')
 const messageInput = document.getElementById('message')
-const sendBtn = document.getElementById('send__btn')
 const chatMsg = document.getElementById('chat__message')
 const feedback = document.getElementById('feedback')
 const firstMsg = document.querySelector('.first-message')
 const preview = document.querySelector('.preview-container');
+let cross = document.querySelector('.closePre')
 let files;
 
 
@@ -50,7 +50,18 @@ messageInput.addEventListener('keypress',(e)=>{
 
 
 inpFile.addEventListener('change',(e)=>{
- 
+    
+    preview.innerHTML=''
+
+   
+
+    cross.classList.toggle('is_none')
+    cross.onclick=()=>{
+        preview.innerHTML=''
+        cross.classList.toggle('is_none')
+    }
+
+
     files =document.querySelector('.file').files;
    
 
@@ -61,6 +72,19 @@ inpFile.addEventListener('change',(e)=>{
         reader.addEventListener('load',()=>{
             let image = new Image();
             image.src=reader.result
+
+            let modal = document.getElementById("Modal");
+            let modalImg = document.querySelector('.modal-content')
+
+            image.onclick = ()=>{
+                modal.style.display='block';
+                modalImg.src = reader.result
+                let close = document.querySelector('.close')
+
+                close.onclick=()=>{
+                    modal.style.display='None';
+                }
+            }
             preview.appendChild(image);
         })
 
@@ -82,34 +106,42 @@ inpFile.addEventListener('change',(e)=>{
 
 
 messageInput.addEventListener('keydown',async (e)=>{
-   
+ 
         const message =messageInput.value
-        files =document.querySelector('.file').files;
-        let imgArray=[]
+
+    
     if (e.key === 'Enter'){
-           
-        if(files.length !== 0){
-          
+           console.log(files)
+   
+        if(files !== undefined){
+            files=Array.from(files)
+            console.log(Array.isArray(files))
+            let imgArray=[]
            
 
             for(const file of files){
                 const result = await readImg(file)
-                imgArray.push({img:result})
+                imgArray.push(result)
+                console.log('push')
             }
 
+            console.log(imgArray)
             
             if(message !== null){
                 let data = {imgArray, message}
                 console.log(data)
                 socket.emit('chat-message',data)
                 preview.innerHTML=''
-                messageInput.value= ""
+                messageInput.value= ''
+                files.splice(0)
+             
             }else{
                 let data = {imgArray}
                 console.log(data)
                 socket.emit('chat-message',data)
                 preview.innerHTML=''
-            
+                files.splice(0)
+                
             }
 
 
@@ -121,7 +153,7 @@ messageInput.addEventListener('keydown',async (e)=>{
             socket.emit('chat-message',message)
             messageInput.value= ""
         }
-     
+        cross.classList.toggle('is_none')
     }})
 
 
@@ -293,18 +325,32 @@ function appendMsg(data){
         
 
         let pictures = data['images']
+        console.log(pictures)
         let imgContainer = document.createElement('div')
         imgContainer.className='usr-images-container'
-        // pictures.forEach(p=>{
+        pictures.forEach(p=>{
 
         let image = document.createElement('img')
         image.className='usr-image'
+        image.classList.add('zoom')
+        image.src = p
+        
 
-        image.src = data['images']
+        let modal = document.getElementById("Modal");
+        let modalImg = document.querySelector('.modal-content')
+        image.onclick = ()=>{
+            modal.style.display='block';
+            modalImg.src = p
+            let close = document.querySelector('.close')
+
+            close.onclick=()=>{
+                modal.style.display='None';
+            }
+        }
 
         imgContainer.appendChild(image)
 
-        // })
+        })
 
 
         msgBlock.append(imgContainer)
@@ -370,7 +416,7 @@ socket.on('leave-message',(data)=>{
 
 const userList = document.querySelector('.memberList');
 function outputRoomUsers(users){
-    // userList.innerHTML=`${users.map(user=>`<li>${user.username}</li>`).join('')}`;
+
     userList.innerHTML=''
     users.forEach(user=>{
 

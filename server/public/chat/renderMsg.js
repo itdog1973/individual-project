@@ -1,3 +1,4 @@
+
 let isLoading = false;
 let offset = 0;
 let firstTime = true;
@@ -9,22 +10,10 @@ export async function getMsg(){
     const params = new Proxy(new URLSearchParams(window.location.search), {
         get: (searchParams, prop) => searchParams.get(prop),
       });
-      // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
       let threadId = params.threadId
       console.log(threadId)
       let endPoint = `/api/messages?offset=${offset}&threadId=${threadId}`
-    //   let h = new Headers()
-    //   h.append('Content-type', 'application/json')
 
-    //   let data =JSON.stringify({tID:`${threadId}`, offset})
-
-      
-    //   let request = new Request(endPoint,{
-    //       method:'POST',
-    //       headers: h,
-    //       body: data
-
-    //   })
 
 
       try{
@@ -60,32 +49,101 @@ export async function getMsg(){
 
 function renderMsg(data){
     let chatContainer = document.getElementById('chat__message')
+  
+    
+  
     const reverseData = data.reverse()
+    
+    console.log(data)
+
     reverseData.forEach((msg)=>{
         let msgBlock = document.createElement('div')
-        msgBlock.className='msg_block'
-        let infoBlock = document.createElement('div')
-        infoBlock.className='info_block'
-        let userInfo = document.createElement('span')
-        userInfo.textContent=msg['user_name']
-        userInfo.className='user_info'
+         msgBlock.className='msg_block'
+         let infoBlock;
+         let userMsg;
+         let imgContainer;
+        if(msg['message'] != null){
+           
+            infoBlock = document.createElement('div')
+            infoBlock.className='info_block'
+            let userInfo = document.createElement('span')
+            userInfo.textContent=msg['user_name']
+            userInfo.className='user_info'
+    
+            let userTime = document.createElement('span')
+            userTime.className='user_time'
+            userTime.textContent=msg['create_date']
+    
+    
+            infoBlock.append(userInfo,userTime)
+    
+    
+            userMsg = document.createElement('p')
+            userMsg.className='user_msg'
+            userMsg.textContent=msg['message']
 
-        let userTime = document.createElement('span')
-        userTime.className='user_time'
-        userTime.textContent=msg['create_date']
+            msgBlock.append(infoBlock,userMsg)
+        }
+       
+
+        
+        if(msg['images'] != null){
+            
+                console.log(typeof(msg['images']))
+                let pictures = JSON.parse(msg['images'])
+                console.log(Array.isArray(pictures))
+
+                imgContainer = document.createElement('div')
+                imgContainer.className='usr-images-container'
+                pictures.forEach(p=>{
+           
+                let image = document.createElement('img')
+                image.className='usr-image'
+        
+                image.src = p
+
+                let modal = document.getElementById("Modal");
+                let modalImg = document.querySelector('.modal-content')
+                image.onclick = ()=>{
+                    modal.style.display='block';
+                    modalImg.src = p
+                    let close = document.querySelector('.close')
+
+                    close.onclick=()=>{
+                        modal.style.display='None';
+                    }
+                }
+        
+                imgContainer.appendChild(image)
+
+                msgBlock.append(infoBlock,userMsg,imgContainer)
+                
+        
+                })
+        
+        
+            
+            
+        
+        }
 
 
-        infoBlock.append(userInfo,userTime)
 
-
-        let userMsg = document.createElement('p')
-        userMsg.className='user_msg'
-        userMsg.textContent=msg['message']
-
-        msgBlock.append(infoBlock,userMsg)
+        
+        
+        
+        
+        
+        
 
 
         chatContainer.appendChild(msgBlock)
+
+
+
+
+
+
     })
 
         if(data.length>=1){

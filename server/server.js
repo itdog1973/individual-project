@@ -5,7 +5,9 @@ const postDB = require('./models/post')
 
 const app = express()
 const httpServer = createServer(app)
-const io = new Server(httpServer)
+const io = new Server(httpServer, {
+    maxHttpBufferSize:10e6
+})
 const jwt = require('jsonwebtoken')
 
 const cookie = require('cookie')
@@ -331,34 +333,37 @@ io.on('connection',async (socket)=>{
         socket.on('chat-message', async (message)=>{
             console.log('trigger')
             if(message.hasOwnProperty('imgArray')){
-                console.log(message['imgArray'])
+                
                 if(message.hasOwnProperty('message')){
-                    console.log(message['imgArray'][0]['img'])
-                    const result = await covertBuf(message['imgArray'][0]['img'])
-                    // let images = []
-                    // images.push(`/images/${result}`)
+               
+                    let result = await covertBuf(message['imgArray'])
+               
                     const user = getCurrentUser(currentSocketId)
+               
                     io.to(user.title).emit('chat-message',{
                         message:message['message'],
-                        images:`/images/${result}`,
+                        images:result,
                         user:user.username,
                         createAt
     
                     })
 
-                    
+                    await messageDb.insertOne(user.threadId,user.userId, createAt, message['message'],result)
 
 
                 socket.to(user.title).emit('msg-notification','new-msg')
                 }else{
                     const user = getCurrentUser(currentSocketId)
-                    const result = await covertBuf(message['imgArray'][0]['img'])
+                    const result = await covertBuf(message['imgArray'])
+         
+
                     io.to(user.title).emit('chat-message',{
-                        images:`/images/${result}`,
+                        images:result,
                         user:user.username,
                         createAt
     
                     })
+                    await messageDb.insertOne(user.threadId,user.userId, createAt, images=result)
                 socket.to(user.title).emit('msg-notification','new-msg')
                 }
             
@@ -394,7 +399,7 @@ io.on('connection',async (socket)=>{
             timer= setTimeout(() => {
                 typing=false
                 socket.to(user.title).emit("typing",{typing:typing,username:username})
-            }, 2000);
+            }, 1000);
         })
 
 
@@ -433,13 +438,9 @@ io.on('connection',async (socket)=>{
             
         
             
-                // delete players[socket.id]
-                // console.log('good bye with id'+socket.id);
-                // console.log("current number of payers"+Object.keys(players).length)
-                //  console.log("players dictionary:", players)
+             
                 console.log(currentSocketId)
                 const user= userLeave(currentSocketId);
-                // io.emit('updatePlayers',players)
                 console.log(user)
                 if(user){
 
@@ -463,18 +464,9 @@ io.on('connection',async (socket)=>{
                     }
                    
     
-    
-    
-                 
-
-
 
                 }
-
-                
-               
-                
-            
+      
         }
         )
   

@@ -12,6 +12,19 @@
 
 
 
+
+    <div id="Modal" class="modal">
+
+     
+        <span class="close">&times;</span>
+
+        <img class="modal-content">
+        
+     
+      </div>
+
+
+
     <canvas id="canvas"></canvas>
 
     
@@ -53,16 +66,17 @@
                 
                 <div class="send">
                     <% if (user) { %>
+                        <span class="closePre is_none" >&times;</span>
                         <div class="preview-container">
-                          
+                            
                         </div>
                      
-                        <input type="text" name="message" id="message">
+                        <input type="text" name="message" id="message" autofocus>
                 
                         <label for="inpFile">
                             <img src="/icon/camara.svg" class="camara" alt="">
                         </label>
-                        <input type="file" multiple class="file" accept="image/*" id="inpFile" >
+                        <input type="file" multiple class="file"  accept="image/png, image/jpeg" id="inpFile" >
        
 
                     <% }  else { %>
@@ -100,6 +114,8 @@
 
 
     <audio src="/sound/sound.mp3" controls style="display: none;" id="audio"></audio>
+
+
 
 
 
