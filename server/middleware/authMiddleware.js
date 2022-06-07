@@ -76,7 +76,7 @@ function checkToken(cookief){
         return new Promise((resolve, reject)=>{
             jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err, decodeToken)=>{
                 if(err){
-                    console.log(err.message)
+                    console.log('this',err.message)
                     return reject (crypto.randomUUID())
                 }else{
                 

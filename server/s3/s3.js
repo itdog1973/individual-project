@@ -1,6 +1,9 @@
-require('dotenv').config
+require('dotenv').config()
+
 const AWS = require('aws-sdk');
 const short = require('short-uuid');
+
+
 
 AWS.config.update({
     region : process.env.AWS_BUCKET_REGION,
@@ -15,11 +18,21 @@ AWS.config.update({
 let s3Bucket = new AWS.S3( { params: {Bucket: process.env.AWS_BUCKET_NAME} } );
 
 
-async function covertBuf(images){
+function covertBuf(images){
     
-   const results = await Promise.all(images.map( async image=>{
+    let result = images.map(processImg)
+   
+    let results = Promise.all(result)
+ 
+    return results
+      
+   
+}
 
-    let buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ""),'base64') 
+
+function processImg(data){
+    return new Promise((resolve,reject)=>{
+        let buffer = Buffer.from(data.replace(/^data:image\/\w+;base64,/, ""),'base64') 
        
     let id = short.generate()
     let params = {
@@ -29,15 +42,17 @@ async function covertBuf(images){
         ContentEncoding: 'base64'
     };
 
-    await s3Bucket.putObject(params).promise()
-    return  `https://chill-talk2.s3.ap-northeast-1.amazonaws.com/${id}`
-   }))
-   console.log('finsihed uploading ')
-   return results
+    s3Bucket.putObject(params,(err,data)=>{
+        if(err){
+            reject('null')
+        }else{
+            resolve(`https://chill-talk2.s3.ap-northeast-1.amazonaws.com/${id}`)
+        }
+    })
 
+    
+    })
 }
-
-
 
 
 

@@ -5,6 +5,10 @@ export default(player, socket)=>{
         if(e.key=== 'ArrowRight' || e.key==='Right'){
             
             dir ='right'
+
+            let position = player.move(dir);
+            console.log(position)
+            socket.emit('move-player', {dir,position})
       
             
         }else if(e.key=== 'ArrowLeft' || e.key==='Left'){
@@ -12,20 +16,30 @@ export default(player, socket)=>{
     
     
             dir ='left'
+
+            let position = player.move(dir);
+            console.log(position)
+            socket.emit('move-player', {dir,position})
       
         }else if(e.key=== 'ArrowUp' || e.key==='Up'){
             dir ='up'
+
+            let position = player.move(dir);
+            console.log(position)
+            socket.emit('move-player', {dir,position})
          
           
       
         }else if(e.key === 'ArrowDown' || e.key==='Down'){
     
             dir ='down'
+
+            let position = player.move(dir);
+            console.log(position)
+            socket.emit('move-player', {dir,position})
         
         }
 
-        player.move(dir);
-        socket.emit('move-player', dir)
       
     });
 
@@ -36,21 +50,31 @@ export default(player, socket)=>{
         if(e.key=== 'ArrowRight' || e.key==='Right') {
         dir ='right'
    
+        let position = player.stop(dir);
+        socket.emit('stop-player', {dir,position})
+
         }
         if(e.key=== 'ArrowLeft' || e.key==='Left') {
             dir ='left'
+            let position = player.stop(dir);
+            socket.emit('stop-player', {dir,position})
+    
        
         } 
         if(e.key=== 'ArrowUp' || e.key==='Up') {
             dir ='up'
+            let position = player.stop(dir);
+            socket.emit('stop-player', {dir,position})
+    
         
         }
         if(e.key === 'ArrowDown' || e.key==='Down'){
           
             dir ='down'
+            let position = player.stop(dir);
+            socket.emit('stop-player', {dir,position})
+    
         }
 
-        player.stop(dir);
-        socket.emit('stop-player', dir)
-
+   
 })}

@@ -5,8 +5,8 @@ const bcrypt = require('bcrypt')
 require('dotenv').config({path:__dirname+'/.env'})
 const jwt = require('jsonwebtoken')
 const { requireAuth } = require('../middleware/authMiddleware')
-
-
+const { generateAccessToken } = require('../middleware/jwt')
+const maxAge = 1*24*60*60
 
 
 
@@ -78,16 +78,13 @@ router.put('/',async (req,res)=>{ //使用者登入
         }
 
     }catch(err){
-        console.log("500 error")
+        console.log(err)
         res.status(500).send()
     }   
 
 })
 
-const maxAge = 1*24*60*60
-function generateAccessToken(user){
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:maxAge})
-}
+
 
 
 
@@ -101,6 +98,14 @@ res.json({logout:true})
 
 
 })
+
+
+// router.get('/logout',(req,res)=>{
+  
+//     req.session = null;
+//     req.logout();
+//     res.redirect('/')
+// })
 
 
 module.exports=router

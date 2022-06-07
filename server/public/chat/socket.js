@@ -36,7 +36,7 @@ const firstMsg = document.querySelector('.first-message')
 const preview = document.querySelector('.preview-container');
 let cross = document.querySelector('.closePre')
 let files;
-
+let inpFile = document.getElementById('inpFile')
 
 
 
@@ -50,21 +50,27 @@ messageInput.addEventListener('keypress',(e)=>{
 
 
 inpFile.addEventListener('change',(e)=>{
-    
-    preview.innerHTML=''
 
-   
-
-    cross.classList.toggle('is_none')
-    cross.onclick=()=>{
-        preview.innerHTML=''
-        cross.classList.toggle('is_none')
-    }
+    console.log('trigger')
+    console.log(inpFile)
+    // remove images
 
 
+
+    // got all the images files
     files =document.querySelector('.file').files;
-   
+   console.log(files)
 
+   cross.classList.remove('is_none')
+   cross.onclick=()=>{
+       preview.innerHTML=''
+       inpFile.value=''
+       cross.classList.add('is_none')
+   }
+
+
+
+    // make them preview
     function readAndPreview(file){
     
         let reader = new FileReader();
@@ -72,6 +78,10 @@ inpFile.addEventListener('change',(e)=>{
         reader.addEventListener('load',()=>{
             let image = new Image();
             image.src=reader.result
+            preview.appendChild(image);
+
+
+
 
             let modal = document.getElementById("Modal");
             let modalImg = document.querySelector('.modal-content')
@@ -83,9 +93,9 @@ inpFile.addEventListener('change',(e)=>{
 
                 close.onclick=()=>{
                     modal.style.display='None';
+
                 }
             }
-            preview.appendChild(image);
         })
 
         reader.readAsDataURL(file)
@@ -153,7 +163,7 @@ messageInput.addEventListener('keydown',async (e)=>{
             socket.emit('chat-message',message)
             messageInput.value= ""
         }
-        cross.classList.toggle('is_none')
+        cross.classList.add('is_none')
     }})
 
 
@@ -540,12 +550,21 @@ imgl2.src = '/characters/ml2.png'
 let players = []
 socket.on('init-char',({id, plyers})=>{
     console.log(id)
+    console.log(plyers)
     const player = new Player({ id })
     controls(player, socket)
     console.log(player.id)
 
     socket.emit('new-player', player);
-    socket.on('new-player', obj => players.push(new Player(obj)));
+
+    socket.on('new-player', obj => {
+        players.push(new Player(obj))
+
+
+   
+        
+    });
+   
 
     socket.on('move-player', ({id, dir}) =>{
 
@@ -554,8 +573,7 @@ socket.on('init-char',({id, plyers})=>{
         })
         console.log(user.id)
         user.move(dir)
-
-
+       
     })
     
     socket.on('stop-player', ({id, dir}) =>{
@@ -567,7 +585,7 @@ socket.on('init-char',({id, plyers})=>{
 
 
     players = plyers.map(v => new Player(v)).concat(player);
-
+    console.log(players)
 
     socket.on('remove-player',id => players = players.filter( v => v.id !== id));
 
@@ -575,12 +593,12 @@ socket.on('init-char',({id, plyers})=>{
         console.log(players)
         ctx.clearRect(0,0,canvas.width, canvas.height);
         players.forEach(v=>{
-          
+           
             v.draw(ctx)
             v.newPost()
         })
 
-        // requestAnimationFrame(draw)
+        requestAnimationFrame(draw)
     }
     draw()
 })

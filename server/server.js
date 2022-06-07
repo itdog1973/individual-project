@@ -39,16 +39,6 @@ app.use('/auth',authAPI)
 app.use('/images',imgAPI)
 
 const { userJoin, getCurrentUser, userLeave, getRoomUsers}   = require('./socket-utils/user-util');
-const passport =require('passport');
-require('./middleware/passport-set')
-
-const cookieSession = require('cookie-session')
-app.use(cookieSession({
-    name: 'chill-talk session',
-    keys: [process.env.COOKIE_SECRET],
-    // Cookie Options
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }))
 
 // const session = require('express-session')
 // app.use(session({
@@ -58,8 +48,15 @@ app.use(cookieSession({
 // }))
 
 
-
-// Initializes passport and passport sessions
+const cookieSession = require('cookie-session')
+app.use(cookieSession({
+    name: 'chill-talk session',
+    keys: [process.env.COOKIE_SECRET],
+    // Cookie Options
+    // maxAge: 24 * 60 * 60 * 1000  24 hours
+  }))
+const passport =require('passport');
+require('./middleware/passport-set')
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -67,9 +64,10 @@ app.use(passport.session());
 
 
 
-app.get('*', checkUser);
-// app.get('*', checkUser);
-app.get('/',  (req,res)=>{
+
+
+
+app.get('/', checkUser, (req,res)=>{
  
     res.render('index')
 })
@@ -118,6 +116,9 @@ app.get('/thread', checkUser, async (req,res)=>{
 
 
 
+
+
+
 let plyers = []
 let typing=false;
 let timer=null;
@@ -138,7 +139,7 @@ io.on('connection',async (socket)=>{
         console.log(author,title,message,username,threadId,currentUserId,time)
        
         const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]); ///////show socket
-        console.log(sockets);
+        console.log('the total players in connecting to this socket',sockets);
         let usersInRoom = getRoomUsers(title)
 
         const usersIdInRoom = usersInRoom.map((user)=>{
@@ -408,21 +409,56 @@ io.on('connection',async (socket)=>{
         socket.on('new-player', obj => {
             console.log('new player id',currentSocketId)
             const user = getCurrentUser(currentSocketId)
+            console.log('the new player info',obj)
             plyers.push(obj);
+            console.log('all players in an array',plyers)
             socket.to(user.title).emit('new-player', obj)});
 
-        socket.on('move-player',  dir => {
+        socket.on('move-player',  info => {
             const user = getCurrentUser(currentSocketId)
 
             console.log('moveing user id',user )
             console.log(getRoomUsers(user.title))
-            socket.to(user.title).emit('move-player', {id:currentSocketId, dir})
+            let foundPlayer = plyers.find(x => x.id == currentSocketId);
+            console.log('the move player index is ',foundPlayer)
+            console.log('the dir is',info)
+            console.log(info['dir'], info['position'])
+
+            if(info['dir'] == 'down' ){
+                foundPlayer.y=info['position']
+            }else if(info['dir'] == 'up' ){
+                foundPlayer.y=info['position']
+            }else if(info['dir'] == 'left' ){
+                foundPlayer.x=info['position']
+            }else if(info['dir'] == 'right' ){
+                foundPlayer.x=info['position']
+            }
+
+            console.log(plyers)
+            socket.to(user.title).emit('move-player', {id:currentSocketId, dir:info['dir']})
         });
 
-        socket.on('stop-player',  dir =>{
+        socket.on('stop-player',  info =>{
             const user = getCurrentUser(currentSocketId)
             console.log('stop player id', user)
-            socket.to(user.title).emit('stop-player', {id:currentSocketId, dir})
+
+
+
+            let foundPlayer = plyers.find(x => x.id == currentSocketId);
+
+            if(info['dir'] == 'down' ){
+                foundPlayer.y=info['position']
+            }else if(info['dir'] == 'up' ){
+                foundPlayer.y=info['position']
+            }else if(info['dir'] == 'left' ){
+                foundPlayer.x=info['position']
+            }else if(info['dir'] == 'right' ){
+                foundPlayer.x=info['position']
+            }
+
+
+
+            socket.to(user.title).emit('stop-player', {id:currentSocketId, dir:info['dir']})
     });
                     
 

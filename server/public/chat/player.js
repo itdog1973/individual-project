@@ -96,21 +96,24 @@ class Player{
             console.log(this.id)
             if(this.img.src != imgr.src && this.img.src != imgr1.src && this.img.src != imgr2.src){
                 this.img.src = imgr.src
-                console.log('h12')
+                console.log(this.img.src)
             }else if(this.img.src == imgr.src){
        
                 this.img.src = imgr1.src
                 this.dx = this.speed
-                console.log('hi3')
+                console.log( this.img.src)
+                return(this.x)
             }else if( this.img.src == imgr1.src){
          
                 this.img.src = imgr2.src
                 this.dx = this.speed
-                console.log('hi4')
+                console.log( this.img.src)
+                return(this.x)
             }else if( this.img.src == imgr2.src){
                 this.img.src = imgr1.src
                 this.dx = this.speed
-                console.log('hi5')
+                console.log( this.img.src)
+                return(this.x)
             }
         }else if(dir == 'left'){
             if (this.img.src != imgl.src && this.img.src != imgl1.src && this.img.src != imgl2.src){
@@ -119,13 +122,16 @@ class Player{
        
                 this.img.src = imgl1.src
                 this.dx = -this.speed
+                return(this.x)
             }else if( this.img.src == imgl1.src){
          
                 this.img.src = imgl2.src
                 this.dx = -this.speed
+                return(this.x)
             }else if( this.img.src == imgl2.src){
                 this.img.src = imgl1.src
                 this.dx = -this.speed
+                return(this.x)
             }
         }else if(dir == 'up'){
             if (this.img.src != imgup.src && this.img.src != imgup1.src && this.img.src != imgup2.src){
@@ -134,13 +140,16 @@ class Player{
        
                 this.img.src = imgup1.src
                 this.dy= -this.speed
+                return(this.y)
             }else if( this.img.src == imgup1.src){
          
                 this.img.src = imgup2.src
                 this.dy= -this.speed
+                return(this.y)
             }else if( this.img.src == imgup2.src){
                 this.img.src = imgup1.src
                 this.dy= -this.speed
+                return(this.y)
             }
         }else if (dir == 'down'){
             if (this.img.src != imgd.src && this.img.src != imgd1.src && this.img.src != imgd2.src){
@@ -149,13 +158,16 @@ class Player{
        
                 this.img.src = imgd1.src
                 this.dy = this.speed
+                return(this.y)
             }else if( this.img.src == imgd1.src){
          
                 this.img.src = imgd2.src
                 this.dy = this.speed
+                return(this.y)
             }else if( this.img.src == imgd2.src){
                 this.img.src = imgd1.src
                 this.dy = this.speed
+                return(this.y)
             }
         }
     }
@@ -167,18 +179,22 @@ class Player{
             this.dx=0;
             this.dy=0;
             this.img.src = imgr.src
+            return(this.x)
         }else if(dir == 'left'){
             this.dx=0;
             this.dy=0;
             this.img.src = imgl.src
+            return(this.x)
         }else if (dir == 'up'){
             this.dx=0;
             this.dy=0;
             this.img.src = imgup.src
+            return(this.y)
         }else if (dir == 'down'){
             this.dx=0;
             this.dy=0;
             this.img.src = imgd.src
+            return(this.y)
         }
     }
 
