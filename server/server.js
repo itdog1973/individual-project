@@ -40,20 +40,13 @@ app.use('/images',imgAPI)
 
 const { userJoin, getCurrentUser, userLeave, getRoomUsers}   = require('./socket-utils/user-util');
 
-// const session = require('express-session')
-// app.use(session({
-//     secret: process.env.COOKIE_SECRET,
-//     resave: false,
-//     saveUninitialized: false
-// }))
+
 
 
 const cookieSession = require('cookie-session')
 app.use(cookieSession({
     name: 'chill-talk session',
     keys: [process.env.COOKIE_SECRET],
-    // Cookie Options
-    // maxAge: 24 * 60 * 60 * 1000  24 hours
   }))
 const passport =require('passport');
 require('./middleware/passport-set')

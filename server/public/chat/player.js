@@ -96,7 +96,7 @@ class Player{
             console.log(this.id)
             if(this.img.src != imgr.src && this.img.src != imgr1.src && this.img.src != imgr2.src){
                 this.img.src = imgr.src
-                console.log(this.img.src)
+                return(this.img.src)
             }else if(this.img.src == imgr.src){
        
                 this.img.src = imgr1.src
@@ -118,6 +118,7 @@ class Player{
         }else if(dir == 'left'){
             if (this.img.src != imgl.src && this.img.src != imgl1.src && this.img.src != imgl2.src){
                 this.img.src = imgl.src
+                return(this.img.src)
             }else if(this.img.src == imgl.src){
        
                 this.img.src = imgl1.src
