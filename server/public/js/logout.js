@@ -2,10 +2,11 @@
 
 export function logout(){
     let logoutBtn = document.querySelector('.logout_btn')
-    console.log(!!logoutBtn)
-    if(!!logoutBtn){
-        logoutBtn.addEventListener('click',logoutRequest)
-    }
+    // console.log(!!logoutBtn)
+    // if(!!logoutBtn){
+    //     logoutBtn.addEventListener('click',logoutRequest)
+    // }
+    logoutBtn.addEventListener('click',logoutRequest)
 }
 
 

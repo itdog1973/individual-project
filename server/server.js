@@ -1,4 +1,5 @@
 const express = require('express');
+
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const postDB = require('./models/post')
@@ -59,6 +60,17 @@ app.use(passport.session());
 
 
 
+
+
+
+app.get('/login',(req,res)=>{
+    res.render('login')
+})
+
+
+app.get('/register',(req,res)=>{
+    res.render('register')
+})
 
 app.get('/', checkUser, (req,res)=>{
  
@@ -127,7 +139,7 @@ io.on('connection',async (socket)=>{
     let foundUser;
    
     //start join room 
-    socket.on('joinRoom',({author,title,message,username,threadId,time})=>{
+    socket.on('joinRoom',async ({author,title,message,username,threadId,time})=>{
         
         console.log(author,title,message,username,threadId,currentUserId,time)
        
@@ -184,7 +196,7 @@ io.on('connection',async (socket)=>{
 
 
             const user = userJoin(currentSocketId,username,title,threadId,currentUserId,time)
-
+        
                
                 socket.join(user.title)
                 currentSocketId=user.socketId;
@@ -212,7 +224,16 @@ io.on('connection',async (socket)=>{
                 })
 
 
-                
+                if(user.username!="guest"){
+                    const record = await postDB.getBrowseRecord(currentUserId,threadId)
+                    console.log('browse record2', record)
+                    if(record.length!=0){
+                        console.log('trigger')
+                       await postDB.updateBrowseRecord(currentUserId,threadId)
+                    }else{
+                        await postDB.insertBrowseTime(currentUserId,threadId)
+                    }
+                }
 
 
 
@@ -221,7 +242,7 @@ io.on('connection',async (socket)=>{
                 
                 if(user.username != 'guest'){
                     socket.emit('init-char',{
-                        id:currentSocketId,
+                        id:socket.id,
                         plyers
                 })}
 
@@ -250,6 +271,7 @@ io.on('connection',async (socket)=>{
 
                 const user = userJoin(currentSocketId,username,title,threadId,currentUserId)
 
+               
                             
                 socket.join(user.title)
 
@@ -263,6 +285,16 @@ io.on('connection',async (socket)=>{
                     createAt: time
                 })
 
+                if(user.username!="guest"){
+                    const record = await postDB.getBrowseRecord(currentUserId,threadId)
+                    console.log('browse record2', record)
+                    if(record.length!=0){
+                        console.log('trigger')
+                       await postDB.updateBrowseRecord(currentUserId,threadId)
+                    }else{
+                        await postDB.insertBrowseTime(currentUserId,threadId)
+                    }
+                }
 
 
 
@@ -286,14 +318,9 @@ io.on('connection',async (socket)=>{
                       
                 if(user.username != 'guest'){
                     socket.emit('init-char',{
-                        id:currentSocketId,
+                        id:socket.id,
                         plyers
                 })}
-
-
-
-                
-
 
 
 
@@ -400,11 +427,12 @@ io.on('connection',async (socket)=>{
 
 
         socket.on('new-player', obj => {
-            console.log('new player id',currentSocketId)
-            const user = getCurrentUser(currentSocketId)
+            console.log('new player id',obj)
+            const user = getCurrentUser(obj['id'])
             console.log('the new player info',obj)
             plyers.push(obj);
             console.log('all players in an array',plyers)
+            console.log('this title',user.title)
             socket.to(user.title).emit('new-player', obj)});
 
         socket.on('move-player',  info => {

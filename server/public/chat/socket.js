@@ -49,65 +49,67 @@ messageInput.addEventListener('keypress',(e)=>{
 
 
 
-inpFile.addEventListener('change',(e)=>{
+if(inpFile!=null){
+    inpFile.addEventListener('change',(e)=>{
 
-    console.log('trigger')
-    console.log(inpFile)
-    // remove images
-
-
-
-    // got all the images files
-    files =document.querySelector('.file').files;
-   console.log(files)
-
-   cross.classList.remove('is_none')
-   cross.onclick=()=>{
-       preview.innerHTML=''
-       inpFile.value=''
-       cross.classList.add('is_none')
-   }
-
-
-
-    // make them preview
-    function readAndPreview(file){
+        console.log('trigger')
+        console.log(inpFile)
+        // remove images
     
-        let reader = new FileReader();
-
-        reader.addEventListener('load',()=>{
-            let image = new Image();
-            image.src=reader.result
-            preview.appendChild(image);
-
-
-
-
-            let modal = document.getElementById("Modal");
-            let modalImg = document.querySelector('.modal-content')
-
-            image.onclick = ()=>{
-                modal.style.display='block';
-                modalImg.src = reader.result
-                let close = document.querySelector('.close')
-
-                close.onclick=()=>{
-                    modal.style.display='None';
-
+    
+    
+        // got all the images files
+        files =document.querySelector('.file').files;
+       console.log(files)
+    
+       cross.classList.remove('is_none')
+       cross.onclick=()=>{
+           preview.innerHTML=''
+           inpFile.value=''
+           cross.classList.add('is_none')
+       }
+    
+    
+    
+        // make them preview
+        function readAndPreview(file){
+        
+            let reader = new FileReader();
+    
+            reader.addEventListener('load',()=>{
+                let image = new Image();
+                image.src=reader.result
+                preview.appendChild(image);
+    
+    
+    
+    
+                let modal = document.getElementById("Modal");
+                let modalImg = document.querySelector('.modal-content')
+    
+                image.onclick = ()=>{
+                    modal.style.display='block';
+                    modalImg.src = reader.result
+                    let close = document.querySelector('.close')
+    
+                    close.onclick=()=>{
+                        modal.style.display='None';
+    
+                    }
                 }
-            }
-        })
-
-        reader.readAsDataURL(file)
-    }
-
-
-    if(files){
-        console.log(files);
-        [].forEach.call(files, readAndPreview)
-    }
-
-})
+            })
+    
+            reader.readAsDataURL(file)
+        }
+    
+    
+        if(files){
+            console.log(files);
+            [].forEach.call(files, readAndPreview)
+        }
+    
+    })
+}
 
 
 
@@ -585,6 +587,7 @@ socket.on('init-char',({id, plyers})=>{
 
 
     players = plyers.map(v => new Player(v)).concat(player);
+    console.log(plyers)
     console.log(players)
 
     socket.on('remove-player',id => players = players.filter( v => v.id !== id));
@@ -598,7 +601,7 @@ socket.on('init-char',({id, plyers})=>{
             v.newPost()
         })
 
-        requestAnimationFrame(draw)
+        // requestAnimationFrame(draw)
     }
     draw()
 })

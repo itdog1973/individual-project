@@ -12,7 +12,7 @@ const requireAuth = (req,res,next)=>{
         jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err, decodeToken)=>{
             if(err){
                 console.log(err.message)
-                res.redirect('/')
+                res.redirect('/login')
             }else{
             
                 res.user_id = decodeToken.user_id
@@ -24,7 +24,7 @@ const requireAuth = (req,res,next)=>{
         })
     }
     else{
-        res.redirect('/')
+        res.redirect('/login')
     }
 }
 
@@ -38,8 +38,7 @@ const checkUser =  (req,res,next)=>{
         jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, async (err,decodeToken)=>{
             if(err){
                 console.log(err.message)
-                res.locals.user=null;
-                next()
+                res.redirect('/login')
             }else{
      console.log('checking'+decodeToken.user_id)
 
@@ -58,8 +57,7 @@ const checkUser =  (req,res,next)=>{
     }
     })
     }else{
-        res.locals.user=null;
-        next()
+        res.redirect('/login')
     }
 } 
 
@@ -94,10 +92,6 @@ function checkToken(cookief){
    
 }
 
-function isLoggedIn(req,res, next){
-    req.user ? next() : res.sendStatus(401)
-}
 
 
-
-module.exports={requireAuth, checkUser, checkToken,isLoggedIn };
+module.exports={requireAuth, checkUser, checkToken };

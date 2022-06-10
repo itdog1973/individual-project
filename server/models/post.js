@@ -1,3 +1,4 @@
+const { threadId } = require('../db-config')
 const pool = require('../db-config')
 
 
@@ -126,6 +127,82 @@ postDB.searchPost = (keyWord)=>{
             }else{
                 return resolve(results)
             }
+        })
+    })
+}
+
+
+postDB.insertBrowseTime = (userId, threadId)=>{
+    return new Promise((resolve,reject)=>{
+        pool.getConnection((err,connection)=>{
+            if(err){
+                return reject (err)
+            }else{
+                connection.beginTransaction((err)=>{
+                    if(err){
+                        connection.rollback(()=>{
+                            connection.release()
+                        })
+                        
+                    }else{
+                        connection.execute('INSERT INTO user_thread (user_id, thread_id) VALUES (?,?)',[userId,threadId], (err,results)=>{
+                            if(err){
+                                connection.rollback(()=>{
+                                    connection.release()
+                                    return reject(err)
+                                })
+                            }else{
+                                connection.commit((err)=>{
+                                    if(err){
+                                        connection.rollback(()=>{
+                                            connection.release()
+                                            return reject(err)
+                                        })
+                                    }else{
+                                        connection.release()
+                                        return resolve(results)
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    })
+}
+
+postDB.getBrowseRecord = (userId, threadId)=>{
+    return new Promise((resolve, reject)=>{
+        console.log(userId, threadId)
+        pool.execute('select * from user_thread where user_id = (?) and thread_id = (?);',[userId, threadId],(err,results)=>{
+            console.log(results)
+            return resolve(results)
+        })
+    })
+}
+
+postDB.updateBrowseRecord = (userId, threadId)=>{
+    return new Promise((resolve, reject)=>{
+        pool.execute('update user_thread set browse_date = now() where user_id = (?) and thread_id = (?);',[userId, threadId],(err,results)=>{
+            console.log('update result',results)
+            return resolve(results)
+        })
+    })
+}
+
+
+
+postDB.getPersonalPost = (userId, offset)=>{
+    return new Promise((resolve, reject)=>{
+        console.log(userId)
+        pool.execute(`select * from threads t join user_thread ut on ut.thread_id = t.thread_id join users u on u.user_id = t.author_id where ut.user_id = (?) order by browse_date desc limit 7 offset ${offset} ; `,[userId],(err,results)=>{
+            if(err){
+                console.log(err)
+                return reject(err)
+            }
+            console.log('update result',results)
+            return resolve(results)
         })
     })
 }

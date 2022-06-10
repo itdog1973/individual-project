@@ -37,6 +37,10 @@ body{
 
 }
 
+#chat__message{
+    height: 100%;
+    overflow: scroll;
+}
 
 
 .send{

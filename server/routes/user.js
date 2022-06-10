@@ -52,8 +52,8 @@ router.post('/', async(req,res)=>{ //建立使用者
 
 
 router.put('/',async (req,res)=>{ //使用者登入
-    const email = req.body.email
-    const password = req.body.password
+
+    const { email, password } =req.body
     console.log(email)
     console.log(password)
     try{
@@ -100,12 +100,6 @@ res.json({logout:true})
 })
 
 
-// router.get('/logout',(req,res)=>{
-  
-//     req.session = null;
-//     req.logout();
-//     res.redirect('/')
-// })
 
 
 module.exports=router
