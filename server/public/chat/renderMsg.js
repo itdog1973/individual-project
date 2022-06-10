@@ -13,7 +13,7 @@ export async function getMsg(){
       });
       let threadId = params.threadId
       console.log(threadId)
-      let endPoint = `/api/messages?offset=${offset}&threadId=${threadId}`
+      let endPoint = `/api/messages?threadId=${threadId}`
 
 
 
@@ -24,21 +24,22 @@ export async function getMsg(){
             let data = await result.json()
             console.log(result)
             console.log(data)
-            offset +=50
+            // offset +=50
             console.log(offset)
             console.log(data)
             console.log(firstTime)
 
-            if(firstTime==true){
-                firstTime=false;
-                isLoading=false
-                console.log(firstTime)
-                renderMsg(data)
-            }else{
-                isLoading=false
-                console.log(firstTime)
-                renderHistoryMsg(data)
-            }
+            // if(firstTime==true){
+            //     firstTime=false;
+            //     isLoading=false
+            //     console.log(firstTime)
+            //     renderMsg(data)
+            // }else{
+            //     isLoading=false
+            //     console.log(firstTime)
+            //     renderHistoryMsg(data)
+            // }
+            renderMsg(data)
            
         }
         
@@ -152,19 +153,25 @@ function renderMsg(data){
 
     })
      
-        if(data.length<50){
-           console.log('data length less than 50')
-            // let historyLine = document.createElement('div')
-            // historyLine.className='history'
-            // historyLine.textContent='以上為歷史訊息'
-            // chatContainer.appendChild(historyLine)
-            // chatWindow.scrollTop=chatWindow.scrollHeight
-            observer.unobserve(document.querySelector('.trigger'))
-            window.scrollTo(0,0)
+        // if(data.length<50){
+        //    console.log('data length less than 50')
+        //     // let historyLine = document.createElement('div')
+        //     // historyLine.className='history'
+        //     // historyLine.textContent='以上為歷史訊息'
+        //     // chatContainer.appendChild(historyLine)
+        //     // chatWindow.scrollTop=chatWindow.scrollHeight
+        //     observer.unobserve(document.querySelector('.trigger'))
+        //     window.scrollTo(0,0)
             
+        // }
+        if(data.length>1){
+            let historyLine = document.createElement('div')
+            historyLine.className='history'
+            historyLine.textContent='以上為歷史訊息'
+            chatContainer.appendChild(historyLine)
+            window.scrollTo(0,0)
         }
-        
-        window.scrollTo(0,0)
+            
  
      
 
@@ -172,61 +179,61 @@ function renderMsg(data){
 
 
 
-export function renderHistoryMsg(data){
+// export function renderHistoryMsg(data){
 
 
-    console.log('second time tigger')
+//     console.log('second time tigger')
   
 
-    let chatContainer = document.getElementById('chat__message')
+//     let chatContainer = document.getElementById('chat__message')
 
-    // const reverseData = data.reverse()
-    data.forEach((msg)=>{
-        let msgBlock = document.createElement('div')
-        msgBlock.className='msg_block'
-        let infoBlock = document.createElement('div')
-        infoBlock.className='info_block'
-        let userInfo = document.createElement('span')
-        userInfo.textContent=msg['user_name']
-        userInfo.className='user_info'
+//     // const reverseData = data.reverse()
+//     data.forEach((msg)=>{
+//         let msgBlock = document.createElement('div')
+//         msgBlock.className='msg_block'
+//         let infoBlock = document.createElement('div')
+//         infoBlock.className='info_block'
+//         let userInfo = document.createElement('span')
+//         userInfo.textContent=msg['user_name']
+//         userInfo.className='user_info'
 
-        let userTime = document.createElement('span')
-        userTime.className='user_time'
-        userTime.textContent=msg['create_date']
-
-
-        infoBlock.append(userInfo,userTime)
+//         let userTime = document.createElement('span')
+//         userTime.className='user_time'
+//         userTime.textContent=msg['create_date']
 
 
-        let userMsg = document.createElement('p')
-        userMsg.className='user_msg'
-        userMsg.textContent=msg['message']
-
-        msgBlock.append(infoBlock,userMsg)
+//         infoBlock.append(userInfo,userTime)
 
 
+//         let userMsg = document.createElement('p')
+//         userMsg.className='user_msg'
+//         userMsg.textContent=msg['message']
+
+//         msgBlock.append(infoBlock,userMsg)
 
 
-        // let messageTop = document.getElementById('chat__message').firstElementChild
+
+
+//         // let messageTop = document.getElementById('chat__message').firstElementChild
       
-        // chatContainer.insertBefore(msgBlock,messageTop)
+//         // chatContainer.insertBefore(msgBlock,messageTop)
 
-        chatContainer.appendChild(msgBlock)
+//         chatContainer.appendChild(msgBlock)
 
      
-    })
+//     })
     
     
-    if(data.length<50){
-        console.log('data length less than 50')
-        observer.unobserve(document.querySelector('.trigger'))
+//     if(data.length<50){
+//         console.log('data length less than 50')
+//         observer.unobserve(document.querySelector('.trigger'))
         
-    }
-    // chatWindow.scrollTop=0
+//     }
+//     // chatWindow.scrollTop=0
    
 
 
-}
+// }
 
 export function setObserver(){
 

@@ -377,7 +377,7 @@ function appendMsg(data){
 
 
     chatMsg.append(msgBlock)
-    chatWindow.scrollTop=chatWindow.scrollHeight
+    document.getElementById('chat__message').scrollTop=document.getElementById('chat__message').scrollHeight
 
 }
 

@@ -53,7 +53,8 @@ const passport =require('passport');
 require('./middleware/passport-set')
 app.use(passport.initialize());
 app.use(passport.session());
-
+const redis = require('redis')
+const client = redis.createClient(6379)
 
 
 
@@ -368,6 +369,11 @@ io.on('connection',async (socket)=>{
                         createAt
     
                     })
+
+
+             
+
+
 
                     await messageDb.insertOne(user.threadId,user.userId, createAt, message['message'],result)
 
