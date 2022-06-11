@@ -14,7 +14,7 @@ connectR()
 
 
 
-const defaultExpiration = 3600
+// const defaultExpiration = 3600
 
 
 
@@ -25,6 +25,7 @@ const defaultExpiration = 3600
 
 router.get('/' , async (req,res)=>{
     let { threadId, offset } = req.query
+    console.log(offset)
     if(offset == 0){
         try{
             const value = await client.get(`message?threadId=${threadId}`)
