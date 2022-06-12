@@ -601,7 +601,7 @@ socket.on('init-char',({id, plyers})=>{
             v.newPost()
         })
 
-        // requestAnimationFrame(draw)
+        requestAnimationFrame(draw)
     }
     draw()
 })

@@ -2,7 +2,7 @@ const express = require('express')
 const router =express.Router()
 const messageDb = require('../models/message')
 const redis = require('redis')
-const client = redis.createClient(6379)
+const client = redis.createClient( 6379 )
 
 
 async function connectR(){
