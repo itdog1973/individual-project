@@ -550,10 +550,10 @@ imgl2.src = '/characters/ml2.png'
 
 
 let players = []
-socket.on('init-char',({id, plyers})=>{
+socket.on('init-char',({id, room, plyers})=>{
     console.log(id)
     console.log(plyers)
-    const player = new Player({ id })
+    const player = new Player({ id, room })
     controls(player, socket)
     console.log(player.id)
 
@@ -561,10 +561,6 @@ socket.on('init-char',({id, plyers})=>{
 
     socket.on('new-player', obj => {
         players.push(new Player(obj))
-
-
-   
-        
     });
    
 

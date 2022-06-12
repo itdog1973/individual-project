@@ -39,7 +39,7 @@ app.use('/api/messages',msgAPI)
 app.use('/auth',authAPI)
 app.use('/images',imgAPI)
 
-const { userJoin, getCurrentUser, userLeave, getRoomUsers}   = require('./socket-utils/user-util');
+const { userJoin, getCurrentUser, userLeave, getRoomUsers ,users}   = require('./socket-utils/user-util');
 
 
 
@@ -128,13 +128,13 @@ let plyers = []
 let typing=false;
 let timer=null;
 io.on('connection',async (socket)=>{
-    let currentSocketId = socket.id
+
     // socket.emit("hello","world") // to single user who connect to this server
-    console.log(currentSocketId)
+
 
     let cookief =socket.handshake.headers.cookie;
     let currentUserId = await checkToken(cookief)
-    console.log(currentUserId)
+    console.log('curreht user id',currentUserId)
    
     let foundUser;
    
@@ -154,8 +154,8 @@ io.on('connection',async (socket)=>{
     
     
         foundUser = usersInRoom.find((user)=>{
-            console.log(user.userId)
-            console.log(currentUserId)
+            console.log('user_id',user.userId)
+            console.log('socket-id',socket.id)
             return user.userId == currentUserId
         })
     
@@ -167,16 +167,16 @@ io.on('connection',async (socket)=>{
             
      
             
-            currentSocketId = foundUser.socketId
+     
             
-            io.to(currentSocketId).emit('duplicate','error')
+            io.to(foundUser.socketId).emit('duplicate','error')
 
             io.sockets.sockets.forEach((socket) => {
           
 
 
                 // If given socket id is exist in list of all sockets, kill it
-                if(socket.id === currentSocketId){
+                if(socket.id === foundUser.socketId){
 
                    
                     socket.disconnect(true);
@@ -195,11 +195,11 @@ io.on('connection',async (socket)=>{
 
 
 
-            const user = userJoin(currentSocketId,username,title,threadId,currentUserId,time)
+            const user = userJoin(socket.id,username,title,threadId,currentUserId,time)
         
                
                 socket.join(user.title)
-                currentSocketId=user.socketId;
+              
 
                 socket.emit('init-load',{
                     author,
@@ -239,11 +239,12 @@ io.on('connection',async (socket)=>{
 
                 //init a character for user
 
-                
+                let roomPlyers = plyers.filter(player=>player.room === user.title)
                 if(user.username != 'guest'){
                     socket.emit('init-char',{
                         id:socket.id,
-                        plyers
+                        room:user.title,
+                        plyers:roomPlyers
                 })}
 
 
@@ -269,7 +270,7 @@ io.on('connection',async (socket)=>{
 
 
 
-                const user = userJoin(currentSocketId,username,title,threadId,currentUserId)
+                const user = userJoin(socket.id,username,title,threadId,currentUserId)
 
                
                             
@@ -316,10 +317,12 @@ io.on('connection',async (socket)=>{
 
 
                       
+                let roomPlyers = plyers.filter(player=>player.room === user.title)
                 if(user.username != 'guest'){
                     socket.emit('init-char',{
                         id:socket.id,
-                        plyers
+                        room:user.title,
+                        plyers:roomPlyers
                 })}
 
 
@@ -433,19 +436,33 @@ io.on('connection',async (socket)=>{
 
         socket.on('new-player', obj => {
             console.log('new player id',obj)
-            const user = getCurrentUser(obj['id'])
+            console.log(obj['id'])
+            console.log(users)
+
+
+            const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
+            console.log(sockets);
+
+
+            const user = getCurrentUser(socket.id)
+            console.log(user)
+
+            let roomuser = getRoomUsers(obj['room'])
+            console.log(roomuser)
+
             console.log('the new player info',obj)
             plyers.push(obj);
             console.log('all players in an array',plyers)
-            console.log('this title',user.title)
+         
+
             socket.to(user.title).emit('new-player', obj)});
 
         socket.on('move-player',  info => {
-            const user = getCurrentUser(currentSocketId)
+            const user = getCurrentUser(socket.id)
 
             console.log('moveing user id',user )
             console.log(getRoomUsers(user.title))
-            let foundPlayer = plyers.find(x => x.id == currentSocketId);
+            let foundPlayer = plyers.find(x => x.id == socket.id);
             console.log('the move player index is ',foundPlayer)
             console.log('the dir is',info)
             console.log(info['dir'], info['position'])
@@ -461,16 +478,16 @@ io.on('connection',async (socket)=>{
             }
 
             console.log(plyers)
-            socket.to(user.title).emit('move-player', {id:currentSocketId, dir:info['dir']})
+            socket.to(user.title).emit('move-player', {id:socket.id, dir:info['dir']})
         });
 
         socket.on('stop-player',  info =>{
-            const user = getCurrentUser(currentSocketId)
+            const user = getCurrentUser(socket.id)
             console.log('stop player id', user)
 
 
 
-            let foundPlayer = plyers.find(x => x.id == currentSocketId);
+            let foundPlayer = plyers.find(x => x.id == socket.id);
 
             if(info['dir'] == 'down' ){
                 foundPlayer.y=info['position']
@@ -484,7 +501,7 @@ io.on('connection',async (socket)=>{
 
 
 
-            socket.to(user.title).emit('stop-player', {id:currentSocketId, dir:info['dir']})
+            socket.to(user.title).emit('stop-player', {id:socket.id, dir:info['dir']})
     });
                     
 
@@ -501,8 +518,8 @@ io.on('connection',async (socket)=>{
         
             
              
-                console.log(currentSocketId)
-                const user= userLeave(currentSocketId);
+                console.log(socket.id)
+                const user= userLeave(socket.id);
                 console.log(user)
                 if(user){
 

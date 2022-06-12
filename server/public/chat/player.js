@@ -66,7 +66,7 @@ imgl2.src = '/characters/ml2.png'
 
 class Player{
 
-    constructor({id,x=20, y=200, w=60, h=80, speed=5, dx=0, dy=0 }){
+    constructor({id,room,x=20, y=200, w=60, h=80, speed=5, dx=0, dy=0 }){
 
 
         this.x = x;
@@ -77,6 +77,7 @@ class Player{
         this.dx=dx
         this.dy=dy
         this.id = id;
+        this.room=room;
         this.img = new Image()
         this.img.src = '/characters/mr0.png'
         
