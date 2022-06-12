@@ -1,10 +1,10 @@
 const users=[];
 
 //join user to chat
-function userJoin(socketId, username, title, threadId, userId){
+function userJoin(socketId, username, room, userId){
 
 
-    const user={socketId, username, title, threadId, userId}
+    const user={socketId, username, room, userId}
 
     users.push(user);
     console.log('all users in users array',users)
@@ -33,8 +33,8 @@ function userLeave(id){
 
 
 // get room users
-function getRoomUsers(title){
-    return users.filter(user => user.title === title)
+function getRoomUsers(room){
+    return users.filter(user => user.room === room)
 }
 
 

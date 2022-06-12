@@ -88,13 +88,13 @@ postDB.getAll = (offset)=>{
 
 
 
-postDB.checkSpecific=(title,message,author)=>{
+postDB.checkSpecific=(id)=>{
     return new Promise((resolve,reject)=>{
-        pool.execute('select * from threads join users on users.user_id = threads.author_id where title = (?) and message = (?) and user_name =(?);',[title,message,author],(err,results)=>{
+        pool.execute('select title, message, create_date, user_name from threads join users on threads.author_id = users.user_id where thread_id = (?);',[id],(err,results)=>{
             if(err){
                 return reject (err)
             }else{
-                return resolve(results)
+                return resolve(results[0])
             }
         })
     })

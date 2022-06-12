@@ -3,17 +3,13 @@ let isLoading = false;
 let offset = 0;
 let firstTime = true;
 let observer;
-let counter = 0;
+
 
 export async function getMsg(){
-     counter++
-     console.log(counter)
-    const params = new Proxy(new URLSearchParams(window.location.search), {
-        get: (searchParams, prop) => searchParams.get(prop),
-      });
-      let threadId = params.threadId
-      console.log(threadId)
-      let endPoint = `/api/messages?threadId=${threadId}&offset=${offset}`
+    let path = window.location.pathname
+    let room = path.split('/chat/')[1]
+    let roomId = room.split('%')[0]
+      let endPoint = `/api/messages?threadId=${roomId}&offset=${offset}`
 
 
 
@@ -152,7 +148,7 @@ function renderMsg(data){
 
     })
      
-        if(data.length<20){
+        if(data.length>1){
       
             let historyLine = document.createElement('div')
             historyLine.className='history'

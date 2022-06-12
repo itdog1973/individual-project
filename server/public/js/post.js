@@ -22,7 +22,7 @@ export async function  getPost(){
             console.log(isLoading)
             const response = await fetch(request)
             const data = await response.json()
-           
+      
             offset+=7
             renderPost(data)
     
@@ -42,23 +42,18 @@ function renderPost(data){
     
     data.forEach(post=>{
 
-
+        console.log(post)
 
         let threadContainer = document.querySelector('.thread-container')
         
-        let userTag = document.querySelector('.login_user')
-        let user;
-        if(userTag){
-             user = userTag.textContent
-        }else{
-            user="guest"
-        }
+        let user = document.querySelector('.login_user').textContent
+      
         
         let thread = document.createElement('div')
         thread.className="thread"
         console.log(post)
         let a = document.createElement('a')
-        a.href=`/thread/?title=${post["title"]}&message=${post["message"]}&author=${post["user_name"]}&user=${user}&threadId=${post["thread_id"]}&time=${post["create_date"]}`
+        a.href=`/chat/${post["thread_Id"]}}`
         a.className='link'
         
         let author = document.createElement('div')

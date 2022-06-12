@@ -54,7 +54,15 @@ require('./middleware/passport-set')
 app.use(passport.initialize());
 app.use(passport.session());
 
+const redis = require('redis')
+const client = redis.createClient( 6379 )
 
+
+async function connectR(){
+     client.connect()
+  
+}
+connectR()
 
 
 
@@ -88,26 +96,39 @@ app.get('/', checkUser, (req,res)=>{
 
 
 
-app.get('/thread', checkUser, async (req,res)=>{
-  
-    let title=req.query.title;
-    let message=req.query.message;
-    let author=req.query.author;
+app.get('/chat/:id', checkUser, async (req,res)=>{
+    const chatID = req.params.id
+    // let title=req.query.title;
+    // let message=req.query.message;
+    // let author=req.query.author;
     
-    if(title && message && author){
-        try{
-            let result = await postDB.checkSpecific(title,message,author)
-            if(result.length != 0){
-                res.render('chat')
-            }else{
-                res.redirect('/')
-            }
-        }catch(err){
-            res.redirect('/')
-        }
-    }else{
+    // if(title && message && author){
+    //     try{
+            
+    //         if(result.length != 0){
+    //             res.render('chat')
+    //         }else{
+    //             res.redirect('/')
+    //         }
+    //     }catch(err){
+    //         res.redirect('/')
+    //     }
+    // }else{
+    //     res.redirect('/')
+    // }
+    try{
+        let result = await postDB.checkSpecific(chatID)
+     
+        res.render('chat',{ title:result['title'], message:result['message'], author:result['user_name'], time:result['create_date'] })
+
+        
+
+    }catch(err){
+        console.log(err.message)
         res.redirect('/')
     }
+  
+
 
    
 })
@@ -133,19 +154,22 @@ io.on('connection',async (socket)=>{
 
 
     let cookief =socket.handshake.headers.cookie;
-    let currentUserId = await checkToken(cookief)
+    let userInfo = await checkToken(cookief)
+    let currentUserId = userInfo['id']
+    let currentUserName = userInfo['name']
+    
     console.log('curreht user id',currentUserId)
    
     let foundUser;
    
-    //start join room 
-    socket.on('joinRoom',async ({author,title,message,username,threadId,time})=>{
-        
-        console.log(author,title,message,username,threadId,currentUserId,time)
+    //start join room {author,title,message,username,threadId,time}
+    socket.on('joinRoom',async (room)=>{
+        console.log('room id',room)
+        // console.log(author,title,message,username,threadId,currentUserId,time)
        
         const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]); ///////show socket
         console.log('the total players in connecting to this socket',sockets);
-        let usersInRoom = getRoomUsers(title)
+        let usersInRoom = getRoomUsers(room)
 
         const usersIdInRoom = usersInRoom.map((user)=>{
             return user.userId
@@ -154,8 +178,6 @@ io.on('connection',async (socket)=>{
     
     
         foundUser = usersInRoom.find((user)=>{
-            console.log('user_id',user.userId)
-            console.log('socket-id',socket.id)
             return user.userId == currentUserId
         })
     
@@ -195,29 +217,29 @@ io.on('connection',async (socket)=>{
 
 
 
-            const user = userJoin(socket.id,username,title,threadId,currentUserId,time)
+            const user = userJoin(socket.id,currentUserName,room,currentUserId)
         
                
-                socket.join(user.title)
+                socket.join(room)
               
 
-                socket.emit('init-load',{
-                    author,
-                    message,
-                    title,
-                    user:user.username,
-                    createAt: time
-                })
+                // socket.emit('init-load',{
+                //     author,
+                //     message,
+                //     title,
+                //     user:user.username,
+                //     createAt: time
+                // })
 
 
 
 
-                console.log(user) // 印出user details
+                // console.log(user) // 印出user details
                 
               
 
                 if(user.username != 'guest'){
-                    socket.to(user.title).emit('new-user',{
+                    socket.to(user.room).emit('new-user',{
                         user:user.username,
                         message:'已進入聊天室',
                         createAt: new Date().toLocaleString()
@@ -225,13 +247,15 @@ io.on('connection',async (socket)=>{
 
 
                 if(user.username!="guest"){
-                    const record = await postDB.getBrowseRecord(currentUserId,threadId)
+                    console.log(currentUserId,'roooooom',room)
+                    const record = await postDB.getBrowseRecord(currentUserId,room)
                     console.log('browse record2', record)
                     if(record.length!=0){
                         console.log('trigger')
-                       await postDB.updateBrowseRecord(currentUserId,threadId)
+                       await postDB.updateBrowseRecord(currentUserId,room)
                     }else{
-                        await postDB.insertBrowseTime(currentUserId,threadId)
+                        console.log(currentUserId,room)
+                        await postDB.insertBrowseTime(currentUserId,room)
                     }
                 }
 
@@ -239,11 +263,11 @@ io.on('connection',async (socket)=>{
 
                 //init a character for user
 
-                let roomPlyers = plyers.filter(player=>player.room === user.title)
+                let roomPlyers = plyers.filter(player=>player.room === user.room)
                 if(user.username != 'guest'){
                     socket.emit('init-char',{
                         id:socket.id,
-                        room:user.title,
+                        room:user.room,
                         plyers:roomPlyers
                 })}
 
@@ -254,9 +278,9 @@ io.on('connection',async (socket)=>{
 
 
                 // send users and room info 
-                io.to(user.title).emit('roomusers',{
-                    room:user.title,
-                    users: getRoomUsers(user.title)
+                io.to(user.room).emit('roomusers',{
+                    room:user.room,
+                    users: getRoomUsers(user.room)
                 })
 
 
@@ -270,30 +294,32 @@ io.on('connection',async (socket)=>{
 
 
 
-                const user = userJoin(socket.id,username,title,threadId,currentUserId)
+               
+            const user = userJoin(socket.id,currentUserName,room,currentUserId)
 
                
                             
-                socket.join(user.title)
+                socket.join(user.room)
 
                 
 
-                socket.emit('init-load',{
-                    author,
-                    message,
-                    title,
-                    user:user.username,
-                    createAt: time
-                })
+                // socket.emit('init-load',{
+                //     author,
+                //     message,
+                //     title,
+                //     user:user.username,
+                //     createAt: time
+                // })
 
                 if(user.username!="guest"){
-                    const record = await postDB.getBrowseRecord(currentUserId,threadId)
+                    const record = await postDB.getBrowseRecord(currentUserId,room)
                     console.log('browse record2', record)
+                    console.log(currentUserId,'roooooom',room)
                     if(record.length!=0){
                         console.log('trigger')
-                       await postDB.updateBrowseRecord(currentUserId,threadId)
+                       await postDB.updateBrowseRecord(currentUserId,room)
                     }else{
-                        await postDB.insertBrowseTime(currentUserId,threadId)
+                        await postDB.insertBrowseTime(currentUserId,room)
                     }
                 }
 
@@ -301,7 +327,7 @@ io.on('connection',async (socket)=>{
 
                 console.log(user) // 印出user details
                 if(user.username != 'guest'){
-                socket.to(user.title).emit('new-user',{
+                socket.to(user.room).emit('new-user',{
                     user:user.username,
                     message:'已進入聊天室',
                     createAt: new Date().toLocaleString()
@@ -312,16 +338,16 @@ io.on('connection',async (socket)=>{
                 //init a character for user
 
                 
-                let roomUsers = getRoomUsers(title)
+                let roomUsers = getRoomUsers(room)
                 console.log('look',roomUsers)
 
 
                       
-                let roomPlyers = plyers.filter(player=>player.room === user.title)
+                let roomPlyers = plyers.filter(player=>player.room === user.room)
                 if(user.username != 'guest'){
                     socket.emit('init-char',{
                         id:socket.id,
-                        room:user.title,
+                        room:user.room,
                         plyers:roomPlyers
                 })}
 
@@ -337,9 +363,9 @@ io.on('connection',async (socket)=>{
 
 
                 // send users and room info 
-                io.to(user.title).emit('roomusers',{
-                    room:user.title,
-                    users: getRoomUsers(user.title)
+                io.to(user.room).emit('roomusers',{
+                    room:user.room,
+                    users: getRoomUsers(user.room)
                     
                 })
                 }
@@ -362,9 +388,9 @@ io.on('connection',async (socket)=>{
                
                     let result = await covertBuf(message['imgArray'])
                
-                    const user = getCurrentUser(currentSocketId)
+                    const user = getCurrentUser(socket.id)
                
-                    io.to(user.title).emit('chat-message',{
+                    io.to(user.room).emit('chat-message',{
                         message:message['message'],
                         images:result,
                         user:user.username,
@@ -377,29 +403,28 @@ io.on('connection',async (socket)=>{
 
 
 
-                    await messageDb.insertOne(user.threadId,user.userId, createAt, message['message'],result)
-
-
-                socket.to(user.title).emit('msg-notification','new-msg')
+                    await messageDb.insertOne(user.room,user.userId, createAt, message['message'],result)
+              
+                socket.to(user.room).emit('msg-notification','new-msg')
                 }else{
-                    const user = getCurrentUser(currentSocketId)
+                    const user = getCurrentUser(socket.id)
                     const result = await covertBuf(message['imgArray'])
          
 
-                    io.to(user.title).emit('chat-message',{
+                    io.to(user.room).emit('chat-message',{
                         images:result,
                         user:user.username,
                         createAt
     
                     })
-                    await messageDb.insertOne(user.threadId,user.userId, createAt, images=result)
-                socket.to(user.title).emit('msg-notification','new-msg')
+                    await messageDb.insertOne(user.room,user.userId, createAt, images=result)
+                socket.to(user.room).emit('msg-notification','new-msg')
                 }
             
 
             }else{
-                const user = getCurrentUser(currentSocketId)
-                io.to(user.title).emit('chat-message',{
+                const user = getCurrentUser(socket.id)
+                io.to(user.room).emit('chat-message',{
                     message,
                     user:user.username,
                     createAt
@@ -407,10 +432,10 @@ io.on('connection',async (socket)=>{
                 })
          
 
-            socket.to(user.title).emit('msg-notification','new-msg')
+            socket.to(user.room).emit('msg-notification','new-msg')
 
 
-            let result = await messageDb.insertOne(user.threadId,user.userId, createAt, message)
+            let result = await messageDb.insertOne(user.room,user.userId, createAt, message)
             console.log(result)
             }
             
@@ -421,13 +446,13 @@ io.on('connection',async (socket)=>{
 
         socket.on('typing',(username)=>{
             typing=true;
-            const user = getCurrentUser(currentSocketId)
+            const user = getCurrentUser(socket.id)
             console.log(username)
-            socket.to(user.title).emit("typing",{typing:typing,username:username})
+            socket.to(user.room).emit("typing",{typing:typing,username:username})
             clearTimeout(timer)
             timer= setTimeout(() => {
                 typing=false
-                socket.to(user.title).emit("typing",{typing:typing,username:username})
+                socket.to(user.room).emit("typing",{typing:typing,username:username})
             }, 1000);
         })
 
@@ -455,13 +480,13 @@ io.on('connection',async (socket)=>{
             console.log('all players in an array',plyers)
          
 
-            socket.to(user.title).emit('new-player', obj)});
+            socket.to(user.room).emit('new-player', obj)});
 
         socket.on('move-player',  info => {
             const user = getCurrentUser(socket.id)
-
+            console.log(getRoomUsers(user.room))  
             console.log('moveing user id',user )
-            console.log(getRoomUsers(user.title))
+            console.log(getRoomUsers(user.room))
             let foundPlayer = plyers.find(x => x.id == socket.id);
             console.log('the move player index is ',foundPlayer)
             console.log('the dir is',info)
@@ -478,7 +503,7 @@ io.on('connection',async (socket)=>{
             }
 
             console.log(plyers)
-            socket.to(user.title).emit('move-player', {id:socket.id, dir:info['dir']})
+            socket.to(user.room).emit('move-player', {id:socket.id, dir:info['dir']})
         });
 
         socket.on('stop-player',  info =>{
@@ -501,7 +526,7 @@ io.on('connection',async (socket)=>{
 
 
 
-            socket.to(user.title).emit('stop-player', {id:socket.id, dir:info['dir']})
+            socket.to(user.room).emit('stop-player', {id:socket.id, dir:info['dir']})
     });
                     
 
@@ -523,22 +548,22 @@ io.on('connection',async (socket)=>{
                 console.log(user)
                 if(user){
 
-                    io.to(user.title).emit('remove-player', socket.id);
+                    io.to(user.room).emit('remove-player', socket.id);
                     plyers = plyers.filter(v => v.id !== socket.id);
 
 
 
                     if(user.username != 'guest'){
-                        io.to(user.title).emit('leave-message',{
+                        io.to(user.room).emit('leave-message',{
                             user:user.username,
                             message:"已離開聊天室",
                             createAt: new Date().toLocaleString()
                         });
 
                            // send users and room info 
-                    io.to(user.title).emit('roomusers',{
-                        room:user.title,
-                        users: getRoomUsers(user.title)
+                    io.to(user.room).emit('roomusers',{
+                        room:user.room,
+                        users: getRoomUsers(user.room)
                     })
                     }
                    

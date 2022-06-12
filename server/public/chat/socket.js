@@ -5,24 +5,27 @@ const socket = io.connect();
 
 
 
- const params = new Proxy(new URLSearchParams(window.location.search), {
-    get: (searchParams, prop) => searchParams.get(prop),
-  });
+//  const params = new Proxy(new URLSearchParams(window.location.search), {
+//     get: (searchParams, prop) => searchParams.get(prop),
+//   });
   // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
-  let author = params.author; // "some_value"
-  let title = params.title;
-  let message = params.message
-  let username = params.user
-  let threadId = params.threadId
-  let time = params.time
+//   let author = params.author; // "some_value"
+//   let title = params.title;
+//   let message = params.message
+//   let username = params.user
+//   let threadId = params.threadId
+//   let time = params.time
 
 // const socket = io.connect('http://localhost:3000'+`?author=${author}&title=${title}&message=${message}`);
 
 
 
-
+let path = window.location.pathname
+let room = path.split('/chat/')[1]
+let roomId = room.split('%')[0]
+console.log(roomId)
 //join room 
-socket.emit('joinRoom',{author,title,message,username,threadId,time})
+socket.emit('joinRoom',roomId)
 // socket.emit('first-request',{author,title,message})
 
 
@@ -205,13 +208,13 @@ socket.on("msg-notification",(data=>{
 }))
 
 
-socket.on("init-load",(data)=>{
-  console.log(data)
+// socket.on("init-load",(data)=>{
+//   console.log(data)
 
-    appendTitle(data)
-    appendfirstMsg(data)
+//     appendTitle(data)
+//     appendfirstMsg(data)
 
-})
+// })
 
 
 

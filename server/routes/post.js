@@ -3,6 +3,7 @@ const router = express.Router()
 const { requireAuth } = require('../middleware/authMiddleware') 
 const postDB = require('../models/post')
 const redis = require('redis')
+const { json } = require('body-parser')
 const client = redis.createClient(6379)
 async function connectR(){
     client.connect()
@@ -26,17 +27,17 @@ router.post('/', requireAuth , async (req,res)=>{
         console.log(titleResult)
      
         if(titleResult.length===0){
-            let createDate = new Date().toLocaleString()
-            const result = await postDB.insertOne(title,message,res.user_id,createDate,cat)
+            let create_date = new Date().toLocaleString()
+            const result = await postDB.insertOne(title,message,res.user_id,create_date,cat)
 
            
 
 
             console.log('this is insert result ',result)
-            const payload ={ title, message, username:res.userName, threadId:result, userId:res.user_id ,createDate}
+            const payload ={ title, message, user_name:res.userName, thread_Id:result, userId:res.user_id ,create_date}
 
-
-            client.lPush('posts',JSON.stringify({threadId:result,title,message,author_id:res.user_id,category:cat,createDate,username:res.userName}))
+          
+            client.lPush('posts',JSON.stringify({thread_Id:result,title,message,author_id:res.user_id,category:cat,create_date,user_name:res.userName}))
             client.rPop('posts')
             
 
@@ -65,7 +66,7 @@ router.post('/', requireAuth , async (req,res)=>{
 
 
 
-const defaultExpiration = 3600
+
 
 router.get('/', async (req,res)=>{
     let offset = req.query.offset
@@ -76,14 +77,28 @@ router.get('/', async (req,res)=>{
     if(cat==undefined){
         if(offset == 0){
             try{
-                const posts = await client.get('posts')
-                console.log(posts)
-                if(posts !== null){
-                    console.log(posts.length)
-                    return res.json(JSON.parse(posts))
+                const posts = await client.lRange('posts',0,-1)
+             
+                if(posts.length !== 0){
+                    let postsArray = Array.from(posts)
+                    console.log(postsArray)
+                    let postJSONArray=[];
+                    postsArray.forEach(p=>{
+                        postJSONArray.push(JSON.parse(p))
+                    })
+             
+                    console.log(postJSONArray)
+                    return res.json(postJSONArray)
                 }else{
                     const result = await postDB.getAll(offset)
-                    client.setEx('posts',defaultExpiration,JSON.stringify(result))
+                    
+
+                    result.forEach(r =>{
+            
+                        client.rPush('posts',JSON.stringify(r))
+                    })
+
+
                     res.json(result)
                 }
             }catch(err){

@@ -65,11 +65,11 @@ async function sendPost(ev){
     try{
         let response = await fetch(request)
         let data = await response.json()
+        console.log(data)
         if(response.status=="200"){
             console.log(data)
-            console.log(`/thread?title=${data.title}&message=${data.message}&author=${data.username}&user=${data.username}&threadId=${data.threadId}&time=${data.createDate}`)
-            window.location.href=`/thread?title=${data.title}&message=${data.message}&author=${data.username}&user=${data.username}&threadId=${data.threadId}&time=${data.createDate}`
-           
+        
+            window.location.href=`/chat/${data.thread_Id}`
         }
         if(response.status=="400"){
             document.querySelector('.error-message').innerHTML="重覆的title名，請重新填寫"

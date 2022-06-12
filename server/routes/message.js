@@ -26,43 +26,17 @@ connectR()
 router.get('/' , async (req,res)=>{
     let { threadId, offset } = req.query
     console.log(offset)
-    if(offset == 0){
-        try{
-            const value = await client.get(`message?threadId=${threadId}`)
-            console.log('this is message',value)
-            if(value !== null){
-                console.log('messssss')
-                return res.json(JSON.parse(value))
-            }else{
-                try{
-                    console.log('no data')
-                    const result = await messageDb.selectAll(threadId, offset)
-                    client.set(`message?threadId=${threadId}`, JSON.stringify(result) )
-                    res.json(result)
+   
+                try{ 
+                        const result = await messageDb.selectAll(threadId, offset)
+                        res.json(result)
                 }catch(err){
-                   
                     console.log(err)
-                    res.status(500);
+                                    res.status(500);
                 }
+
+
             }
-        }catch(err){
-            console.log(err)
-        }
-    }else{
-        try{
-    
-            const result = await messageDb.selectAll(threadId, offset)
-            res.json(result)
-        }catch(err){
-            console.log(err)
-            res.status(500);
-        }
-    }
-    }
-    
-
-
-
 )
 
 

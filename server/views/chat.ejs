@@ -28,13 +28,31 @@
     <canvas id="canvas"></canvas>
 
     
+
+
+  
+
+
+
+
+
+
+
     
    <div id="chat">
        <a class="exit" href="/">
            <img src="/icon/exit.svg" alt="" class="exit-img">
        </a>
-       <h1 class="title"></h1>
-       <div class="first-message"></div>
+       <h1 class="title"><%= title  %></h1>
+       <div class="first-message">
+            <div class="msg_block">
+                <div class="info_block">
+                    <span class="user_info"><%= author %></span>
+                    <span class="user_time"><%= time %></span>
+                </div>
+                <p class="user_msg" ><%= message %></p>
+            </div>
+       </div>
        <div id="chat__window">
      
            <div id="chat__message">

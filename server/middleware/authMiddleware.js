@@ -78,7 +78,7 @@ function checkToken(cookief){
                     return reject (crypto.randomUUID())
                 }else{
                 
-                    return  resolve(decodeToken.user_id)
+                    return  resolve({id:decodeToken.user_id, name:decodeToken.userName})
           
                      
                 }
