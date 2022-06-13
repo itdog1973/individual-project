@@ -4,64 +4,60 @@ canvas.height=window.innerHeight
 canvas.width=window.innerWidth-450
 let img = new Image();
 img.src = '/characters/mr0.png'
-// img.addEventListener('load',count)
 
 
-// create image
+
+
 let imgr = new Image();
 imgr.src = '/characters/mr.png'
-// imgr.addEventListener('load',count)
+
 
 let imgr1 = new Image();
 imgr1.src = '/characters/mr1.png'
-// imgr1.addEventListener('load',count)
+
 
 let imgr2 = new Image();
 imgr2.src = '/characters/mr2.png'
-// imgr2.addEventListener('load',count)
+
 
 
 let imgup = new Image();
 imgup.src = '/characters/mb.png'
-// imgup.addEventListener('load',count)
+
 
 
 let imgup1 = new Image();
 imgup1.src = '/characters/mb1.png'
-// imgup1.addEventListener('load',count)
+
 
 let imgup2 = new Image();
 imgup2.src = '/characters/mb2.png'
-// imgup2.addEventListener('load',count)
+
 
 
 let imgd = new Image()
 imgd.src = '/characters/mf.png'
-// imgd.addEventListener('load',count)
 
 let imgd1 = new Image()
 imgd1.src = '/characters/mf1.png'
-// imgd1.addEventListener('load',count)
 
 let imgd2 = new Image()
 imgd2.src = '/characters/mf2.png'
-// imgd2.addEventListener('load',count)
 
 
 
 let imgl = new Image()
 imgl.src = '/characters/ml.png'
-// imgl.addEventListener('load',count)
 
 
 let imgl1 = new Image()
 imgl1.src = '/characters/ml1.png'
-// imgl1.addEventListener('load',count)
+
 
 
 let imgl2 = new Image()
 imgl2.src = '/characters/ml2.png'
-// imgl2.addEventListener('load',count)
+
 
 
 class Player{
@@ -94,7 +90,7 @@ class Player{
 
     move(dir){
         if(dir == 'right'){
-            console.log(this.id)
+  
             if(this.img.src != imgr.src && this.img.src != imgr1.src && this.img.src != imgr2.src){
                 this.img.src = imgr.src
                 return(this.img.src)
@@ -102,18 +98,18 @@ class Player{
        
                 this.img.src = imgr1.src
                 this.dx = this.speed
-                console.log( this.img.src)
+    
                 return(this.x)
             }else if( this.img.src == imgr1.src){
          
                 this.img.src = imgr2.src
                 this.dx = this.speed
-                console.log( this.img.src)
+    
                 return(this.x)
             }else if( this.img.src == imgr2.src){
                 this.img.src = imgr1.src
                 this.dx = this.speed
-                console.log( this.img.src)
+         
                 return(this.x)
             }
         }else if(dir == 'left'){

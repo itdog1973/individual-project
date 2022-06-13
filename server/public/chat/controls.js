@@ -7,7 +7,7 @@ export default(player, socket)=>{
             dir ='right'
 
             let position = player.move(dir);
-            console.log(position)
+  
             socket.emit('move-player', {dir,position})
       
             
@@ -18,14 +18,14 @@ export default(player, socket)=>{
             dir ='left'
 
             let position = player.move(dir);
-            console.log(position)
+   
             socket.emit('move-player', {dir,position})
       
         }else if(e.key=== 'ArrowUp' || e.key==='Up'){
             dir ='up'
 
             let position = player.move(dir);
-            console.log(position)
+  
             socket.emit('move-player', {dir,position})
          
           
@@ -35,7 +35,7 @@ export default(player, socket)=>{
             dir ='down'
 
             let position = player.move(dir);
-            console.log(position)
+          
             socket.emit('move-player', {dir,position})
         
         }

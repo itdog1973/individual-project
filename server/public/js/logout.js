@@ -2,10 +2,7 @@
 
 export function logout(){
     let logoutBtn = document.querySelector('.logout_btn')
-    // console.log(!!logoutBtn)
-    // if(!!logoutBtn){
-    //     logoutBtn.addEventListener('click',logoutRequest)
-    // }
+
     logoutBtn.addEventListener('click',logoutRequest)
 }
 
@@ -25,7 +22,7 @@ async function logoutRequest(){
     try{
         let response = await fetch(request)
         let data = response.json()
-        console.log(data)
+
         document.location.reload(true)
     }catch(err){
         console.log(err)

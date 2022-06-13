@@ -43,7 +43,7 @@ export function checkCat(){
 
 async function getSpecificPost(data){
 
-    console.log(data)
+
     offset=0
     let endPoint = `/api/posts?cat=${data}&offset=${offset}`
 
@@ -55,7 +55,6 @@ async function getSpecificPost(data){
             let response = await fetch(endPoint) 
             let data = await response.json()
             renderCatPost(data)
-            console.log(data)
             offset+=7
         
         }
@@ -88,7 +87,6 @@ function renderCatPost(data){
         
         let thread = document.createElement('div')
         thread.className="thread"
-        console.log(post)
         let a = document.createElement('a')
         a.href=`/thread/?title=${post["title"]}&message=${post["message"]}&author=${post["user_name"]}&user=${user}&threadId=${post["thread_id"]}&time=${post["create_date"]}`
         a.className='link'

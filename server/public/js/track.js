@@ -26,13 +26,13 @@ async function renderPersonalTrack(){
     if(isLoading == false){
         isLoading=true
         try{
-            console.log(isLoading)
+
             const response = await fetch(request)
             const data = await response.json()
            
             offset+=7
             renderPost(data)
-            console.log(data)
+
     
         }catch(err){
             console.log(err)
@@ -53,17 +53,12 @@ function renderPost(data){
 
         
         
-        let userTag = document.querySelector('.login_user')
-        let user;
-        if(userTag){
-             user = userTag.textContent
-        }else{
-            user="guest"
-        }
+        // let user = document.querySelector('.login_user').textContent
+        
         
         let thread = document.createElement('div')
         thread.className="thread"
-        console.log(post)
+
         let a = document.createElement('a')
         a.href=`/chat/${post["thread_id"]}}`
         a.className='link'
@@ -149,6 +144,6 @@ function renderPost(data){
     })
 
     isLoading=false
-    console.log(isLoading)
+ 
 
 }

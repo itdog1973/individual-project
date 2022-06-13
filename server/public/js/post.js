@@ -19,7 +19,7 @@ export async function  getPost(){
     if(isLoading == false){
         isLoading=true
         try{
-            console.log(isLoading)
+      
             const response = await fetch(request)
             const data = await response.json()
       
@@ -42,7 +42,7 @@ function renderPost(data){
     
     data.forEach(post=>{
 
-        console.log(post)
+
 
         let threadContainer = document.querySelector('.thread-container')
         
@@ -51,7 +51,7 @@ function renderPost(data){
         
         let thread = document.createElement('div')
         thread.className="thread"
-        console.log(post)
+
         let a = document.createElement('a')
         a.href=`/chat/${post["thread_id"]}}`
         a.className='link'
@@ -65,9 +65,7 @@ function renderPost(data){
         let title =document.createElement('h3')
         title.className= "thread__title"
         title.textContent=post["title"]
-        // let message = document.createElement('div')
-        // message.className="thread__message"
-        // message.textContent=post["message"]
+
         let time = document.createElement('div')
         time.textContent=post["create_date"]
         time.className="thread__time"
@@ -139,7 +137,6 @@ function renderPost(data){
     })
 
     isLoading=false
-    console.log(isLoading)
     if(data.length<7){
         observer.unobserve(document.querySelector('.trigger'));
     }
@@ -160,10 +157,9 @@ export function getObserver(){
 
 
     observer.observe(document.querySelector('.trigger'))
-    console.log('trigger')
+
     function handleIntersect(entries){
-        console.log(entries)
-        console.log(entries[0])
+ 
         if(entries[0].isIntersecting){
             getPost()
         }

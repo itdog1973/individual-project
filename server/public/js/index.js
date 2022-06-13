@@ -9,15 +9,14 @@ import track from './track.js'
 checkCat()
 initSearch()
 
-// regUtils.initRegForm()
-// logUtils.initLogForm()
+
 
 logoutUtils.logout()
 
 postUtils.openPost()
 postInit.getObserver()
 track();
-// postInit.getPost()
+
 
 renderCat()
 

@@ -49,9 +49,6 @@ async function sendPost(ev){
 
 
 
-    for (let key of formData.keys()){
-        console.log(key, formData.get(key))
-    }
 
     let json = convert2Json(formData)
 
@@ -65,11 +62,11 @@ async function sendPost(ev){
     try{
         let response = await fetch(request)
         let data = await response.json()
-        console.log(data)
+
         if(response.status=="200"){
-            console.log(data)
+
         
-            window.location.href=`/chat/${data.thread_Id}`
+            window.location.href=`/chat/${data.thread_id}`
         }
         if(response.status=="400"){
             document.querySelector('.error-message').innerHTML="重覆的title名，請重新填寫"

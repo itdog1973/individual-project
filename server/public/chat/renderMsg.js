@@ -18,21 +18,18 @@ export async function getMsg(){
             isLoading = true
             let result = await fetch(endPoint)
             let data = await result.json()
-            console.log(result)
-            console.log(data)
+
             offset +=20
-            console.log(offset)
-            console.log(data)
-            console.log(firstTime)
+       
 
             if(firstTime==true){
                 firstTime=false;
                 isLoading=false
-                console.log(firstTime)
+       
                 renderMsg(data)
             }else{
                 isLoading=false
-                console.log(firstTime)
+           
                 renderHistoryMsg(data)
             }
       
@@ -53,11 +50,10 @@ let chatWindow = document.querySelector('#chat__message')
 function renderMsg(data){
     let chatContainer = document.getElementById('chat__message')
   
-    console.log('first time tigger')
+
   
     const reverseData = data.reverse()
     
-    console.log(data)
 
     reverseData.forEach((msg)=>{
         let msgBlock = document.createElement('div')
@@ -92,9 +88,9 @@ function renderMsg(data){
         
         if(msg['images'] != null){
             
-                console.log(typeof(msg['images']))
+         
                 let pictures = JSON.parse(msg['images'])
-                console.log(Array.isArray(pictures))
+            
 
                 imgContainer = document.createElement('div')
                 imgContainer.className='usr-images-container'
@@ -148,24 +144,20 @@ function renderMsg(data){
 
     })
      
-        if(data.length>1){
+        if(data.length<20){
       
-            let historyLine = document.createElement('div')
-            historyLine.className='history'
-            historyLine.textContent='以上為歷史訊息'
-            chatContainer.appendChild(historyLine)
             chatWindow.scrollTop=chatWindow.scrollHeight
             observer.unobserve(document.querySelector('.trigger'))
     
             
         }
-        // if(data.length>1){
-        //     let historyLine = document.createElement('div')
-        //     historyLine.className='history'
-        //     historyLine.textContent='以上為歷史訊息'
-        //     chatContainer.appendChild(historyLine)
-        //     window.scrollTo(0,0)
-        // }
+        if(data.length>1){
+            let historyLine = document.createElement('div')
+            historyLine.className='history'
+            historyLine.textContent='以上為歷史訊息'
+            chatContainer.appendChild(historyLine)
+         
+        }
             
         chatWindow.scrollTop=chatWindow.scrollHeight
      
@@ -177,12 +169,10 @@ function renderMsg(data){
 export function renderHistoryMsg(data){
 
 
-    console.log('second time tigger')
-    console.log('secind old msg',data)
-
+  
     let chatContainer = document.getElementById('chat__message')
 
-    // const reverseData = data.reverse()
+
     data.forEach((msg)=>{
         let msgBlock = document.createElement('div')
         msgBlock.className='msg_block'
@@ -220,11 +210,11 @@ export function renderHistoryMsg(data){
     
     
     if(data.length<20){
-        console.log('data length less than 50')
+     
         observer.unobserve(document.querySelector('.trigger'))
         
     }
-    chatContainer.scrollTop=500
+    chatWindow.scrollTop=chatWindow.scrollHeight
    
 
 

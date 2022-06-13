@@ -32,12 +32,12 @@ const userAPI = require('./routes/user.js');
 const postAPI = require('./routes/post.js')
 const msgAPI = require('./routes/message.js')
 const authAPI = require('./routes/auth.js')
-const imgAPI = require('./routes/images.js')
+// const imgAPI = require('./routes/images.js')
 app.use('/api/users',userAPI)
 app.use('/api/posts',postAPI)
 app.use('/api/messages',msgAPI)
 app.use('/auth',authAPI)
-app.use('/images',imgAPI)
+// app.use('/images',imgAPI)
 
 const { userJoin, getCurrentUser, userLeave, getRoomUsers ,users}   = require('./socket-utils/user-util');
 
@@ -70,42 +70,32 @@ connectR()
 
 
 
-
+// login route
 app.get('/login',(req,res)=>{
     res.render('login')
 })
 
-
+// register route
 app.get('/register',(req,res)=>{
     res.render('register')
 })
-
+// home page route
 app.get('/', checkUser, (req,res)=>{
  
     res.render('index')
 })
 
-
-
-
-
-
-
-
-
-
-
-
+// chat room route
 app.get('/chat/:id', checkUser, async (req,res)=>{
     const chatID = req.params.id
 
     try{
         let result = await postDB.checkSpecific(chatID)
-     
-        res.render('chat',{ title:result['title'], message:result['message'], author:result['user_name'], time:result['create_date'] })
-
-        
-
+        if(result){
+            res.render('chat',{ title:result['title'], message:result['message'], author:result['user_name'], time:result['create_date'] })
+        }else{
+            res.redirect('/')
+        }
     }catch(err){
         console.log(err.message)
         res.redirect('/')
@@ -119,52 +109,42 @@ app.get('/chat/:id', checkUser, async (req,res)=>{
 
 
 
-
-
-
-
-
-
-
-
-
 let plyers = []
 let typing=false;
 let timer=null;
 io.on('connection',async (socket)=>{
 
-    // socket.emit("hello","world") // to single user who connect to this server
-
+  
 
     let cookief =socket.handshake.headers.cookie;
     let userInfo = await checkToken(cookief)
     let currentUserId = userInfo['id']
     let currentUserName = userInfo['name']
     
-    console.log('curreht user id',currentUserId)
+
    
     let foundUser;
    
  
     socket.on('joinRoom',async (room)=>{
-        console.log('room id',room)
+  
 
        
         const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]); ///////show socket
-        console.log('the total players in connecting to this socket',sockets);
+  
         let usersInRoom = getRoomUsers(room)
 
         const usersIdInRoom = usersInRoom.map((user)=>{
             return user.userId
         })
-        console.log('user in room'+usersIdInRoom)
+    
     
     
         foundUser = usersInRoom.find((user)=>{
             return user.userId == currentUserId
         })
     
-        console.log('is there a same user in the room'+foundUser)
+      
 
         // check if duiplicate 
         if(foundUser){
@@ -186,7 +166,7 @@ io.on('connection',async (socket)=>{
                    
                     socket.disconnect(true);
                     
-                    console.log('remove a user')
+           
                     
                     const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
                     console.log('the rest:',sockets);
@@ -219,14 +199,14 @@ io.on('connection',async (socket)=>{
 
 
                 if(user.username!="guest"){
-                    console.log(currentUserId,'roooooom',room)
+         
                     const record = await postDB.getBrowseRecord(currentUserId,room)
-                    console.log('browse record2', record)
+      
                     if(record.length!=0){
-                        console.log('trigger')
+                     
                        await postDB.updateBrowseRecord(currentUserId,room)
                     }else{
-                        console.log(currentUserId,room)
+            
                         await postDB.insertBrowseTime(currentUserId,room)
                     }
                 }
@@ -278,10 +258,10 @@ io.on('connection',async (socket)=>{
 
                 if(user.username!="guest"){
                     const record = await postDB.getBrowseRecord(currentUserId,room)
-                    console.log('browse record2', record)
-                    console.log(currentUserId,'roooooom',room)
+            
+         
                     if(record.length!=0){
-                        console.log('trigger')
+        
                        await postDB.updateBrowseRecord(currentUserId,room)
                     }else{
                         await postDB.insertBrowseTime(currentUserId,room)
@@ -290,7 +270,7 @@ io.on('connection',async (socket)=>{
 
 
 
-                console.log(user) // 印出user details
+       
                 if(user.username != 'guest'){
                 socket.to(user.room).emit('new-user',{
                     user:user.username,
@@ -304,7 +284,7 @@ io.on('connection',async (socket)=>{
 
                 
                 let roomUsers = getRoomUsers(room)
-                console.log('look',roomUsers)
+
 
 
                       
@@ -346,7 +326,6 @@ io.on('connection',async (socket)=>{
         let createAt = new Date().toLocaleString()
         //listen for chatmessage
         socket.on('chat-message', async (message)=>{
-            console.log('trigger')
             if(message.hasOwnProperty('imgArray')){
                 
                 if(message.hasOwnProperty('message')){
@@ -400,8 +379,7 @@ io.on('connection',async (socket)=>{
             socket.to(user.room).emit('msg-notification','new-msg')
 
 
-            let result = await messageDb.insertOne(user.room,user.userId, createAt, message)
-            console.log(result)
+            await messageDb.insertOne(user.room,user.userId, createAt, message)
             }
             
  
@@ -409,15 +387,14 @@ io.on('connection',async (socket)=>{
     
 
 
-        socket.on('typing',(username)=>{
+        socket.on('typing',()=>{
             typing=true;
             const user = getCurrentUser(socket.id)
-            console.log(username)
-            socket.to(user.room).emit("typing",{typing:typing,username:username})
+            socket.to(user.room).emit("typing",{typing:typing,username:user.username})
             clearTimeout(timer)
             timer= setTimeout(() => {
                 typing=false
-                socket.to(user.room).emit("typing",{typing:typing,username:username})
+                socket.to(user.room).emit("typing",{typing:typing,username:user.username})
             }, 1000);
         })
 
@@ -425,37 +402,26 @@ io.on('connection',async (socket)=>{
 
 
         socket.on('new-player', obj => {
-            console.log('new player id',obj)
-            console.log(obj['id'])
-            console.log(users)
+       
 
 
             const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
-            console.log(sockets);
+
 
 
             const user = getCurrentUser(socket.id)
-            console.log(user)
-
-            let roomuser = getRoomUsers(obj['room'])
-            console.log(roomuser)
-
-            console.log('the new player info',obj)
+  
             plyers.push(obj);
-            console.log('all players in an array',plyers)
+   
          
 
             socket.to(user.room).emit('new-player', obj)});
 
         socket.on('move-player',  info => {
             const user = getCurrentUser(socket.id)
-            console.log(getRoomUsers(user.room))  
-            console.log('moveing user id',user )
-            console.log(getRoomUsers(user.room))
+     
             let foundPlayer = plyers.find(x => x.id == socket.id);
-            console.log('the move player index is ',foundPlayer)
-            console.log('the dir is',info)
-            console.log(info['dir'], info['position'])
+       
 
             if(info['dir'] == 'down' ){
                 foundPlayer.y=info['position']
@@ -467,15 +433,12 @@ io.on('connection',async (socket)=>{
                 foundPlayer.x=info['position']
             }
 
-            console.log(plyers)
+
             socket.to(user.room).emit('move-player', {id:socket.id, dir:info['dir']})
         });
 
         socket.on('stop-player',  info =>{
             const user = getCurrentUser(socket.id)
-            console.log('stop player id', user)
-
-
 
             let foundPlayer = plyers.find(x => x.id == socket.id);
 
@@ -500,17 +463,11 @@ io.on('connection',async (socket)=>{
 
    
         socket.on('disconnect', ()=>{
-            console.log('a user disconnect')
+
             const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
-            console.log(sockets);
-            console.log(foundUser)
-            
-        
-            
-             
-                console.log(socket.id)
+    
                 const user= userLeave(socket.id);
-                console.log(user)
+  
                 if(user){
 
                     io.to(user.room).emit('remove-player', socket.id);
