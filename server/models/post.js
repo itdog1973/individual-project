@@ -196,7 +196,7 @@ postDB.updateBrowseRecord = (userId, threadId)=>{
 postDB.getPersonalPost = (userId, offset)=>{
     return new Promise((resolve, reject)=>{
         console.log(userId)
-        pool.execute(`select * from threads t join user_thread ut on ut.thread_id = t.thread_id join users u on u.user_id = t.author_id where ut.user_id = (?) order by browse_date desc limit 7 offset ${offset} ; `,[userId],(err,results)=>{
+        pool.execute(`select t.thread_id, t.title, t.message, t.create_date, t.category, u.user_name from threads t join user_thread ut on ut.thread_id = t.thread_id join users u on u.user_id = t.author_id where ut.user_id = (?) order by browse_date desc limit 7 offset ${offset} ; `,[userId],(err,results)=>{
             if(err){
                 console.log(err)
                 return reject(err)

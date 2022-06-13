@@ -53,7 +53,7 @@ function renderPost(data){
         thread.className="thread"
         console.log(post)
         let a = document.createElement('a')
-        a.href=`/chat/${post["thread_Id"]}}`
+        a.href=`/chat/${post["thread_id"]}}`
         a.className='link'
         
         let author = document.createElement('div')

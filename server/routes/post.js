@@ -34,10 +34,10 @@ router.post('/', requireAuth , async (req,res)=>{
 
 
             console.log('this is insert result ',result)
-            const payload ={ title, message, user_name:res.userName, thread_Id:result, userId:res.user_id ,create_date}
+            const payload ={ title, message, user_name:res.userName, thread_id:result, userId:res.user_id ,create_date}
 
           
-            client.lPush('posts',JSON.stringify({thread_Id:result,title,message,author_id:res.user_id,category:cat,create_date,user_name:res.userName}))
+            client.lPush('posts',JSON.stringify({thread_id:result,title,message,author_id:res.user_id,category:cat,create_date,user_name:res.userName}))
             let listLength = (await client.lRange('posts',0,-1)).length
             if(listLength > 7){
                 console.log('length over 7')
@@ -121,7 +121,6 @@ router.get('/', async (req,res)=>{
         try{
             const result = await postDB.getSpecificAll(cat,offset)
             
-            // res.status(200).send(result)
     
             res.json(result)
     
@@ -154,8 +153,8 @@ router.put('/', requireAuth, async (req,res)=>{
 
     try{
         const result = await postDB.getPersonalPost(res.user_id, offset)
-        console.log(result)
         res.status(200).json(result)
+
     }catch(err){
         console.log(err)
     }
