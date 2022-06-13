@@ -121,7 +121,7 @@ postDB.getSpecificAll = (cat,offset)=>{
 
 postDB.searchPost = (keyWord)=>{
     return new Promise((resolve,reject)=>{
-        pool.execute('select user_name, create_date, title  FROM threads join users on user_id = author_id where match (title) against (?);', [keyWord],(err,results)=>{
+        pool.execute('select thread_id, user_name, create_date, title  FROM threads join users on user_id = author_id where match (title) against (?);', [keyWord],(err,results)=>{
             if(err){
                 return reject (err.message)
             }else{

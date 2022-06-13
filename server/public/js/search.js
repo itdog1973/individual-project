@@ -76,7 +76,8 @@ function renderPost(data){
             let thread = document.createElement('div')
             thread.className="thread"
             let a = document.createElement('a')
-            a.href=`/thread/?title=${post["title"]}&message=${post["message"]}&author=${post["user_name"]}&user=${user}&threadId=${post["thread_id"]}&time=${post["create_date"]}`
+            console.log(post)
+            a.href=`/chat/${post['thread_id']}`
             a.className='link'
             
             let author = document.createElement('div')
