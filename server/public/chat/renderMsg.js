@@ -171,6 +171,8 @@ export function renderHistoryMsg(data){
 
   
     let chatContainer = document.getElementById('chat__message')
+    let messageTop = document.getElementById('chat__message').children[1]
+  
 
 
     data.forEach((msg)=>{
@@ -199,11 +201,13 @@ export function renderHistoryMsg(data){
 
 
 
-        let messageTop = document.getElementById('chat__message').firstElementChild
-      
-        chatContainer.insertBefore(msgBlock,messageTop)
+       
 
-        // chatContainer.appendChild(msgBlock)
+        chatContainer.insertBefore(msgBlock,messageTop)
+       
+       
+
+    
 
  
     })
@@ -214,7 +218,7 @@ export function renderHistoryMsg(data){
         observer.unobserve(document.querySelector('.trigger'))
         
     }
-    chatWindow.scrollTop=100
+    chatWindow.scrollTop=120
    
 
 
