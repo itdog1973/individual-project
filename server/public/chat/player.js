@@ -6,8 +6,6 @@ let img = new Image();
 img.src = '/characters/mr0.png'
 
 
-
-
 let imgr = new Image();
 imgr.src = '/characters/mr.png'
 

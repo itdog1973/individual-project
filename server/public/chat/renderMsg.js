@@ -262,7 +262,7 @@ export function renderHistoryMsg(data){
     if(data.length<20){
      
         observer.unobserve(document.querySelector('.trigger'))
-        chatWindow.scrollTop=300
+        chatWindow.scrollTop=0
         
     }else{
         chatWindow.scrollTop=1000
