@@ -476,15 +476,18 @@ socket.on('init-char',({id, room, plyers})=>{
     socket.on('remove-player',id => players = players.filter( v => v.id !== id));
 
     const draw = ()=>{
-
+        let load;
         ctx.clearRect(0,0,canvas.width, canvas.height);
         players.forEach(v=>{
            
-            v.draw(ctx)
+            load = v.draw(ctx)
+        
             v.newPost()
         })
+        if (load == false){
+            requestAnimationFrame(draw)
+        }
 
-        requestAnimationFrame(draw)
     }
     draw()
 })

@@ -137,8 +137,7 @@ io.on('connection',async (socket)=>{
         const usersIdInRoom = usersInRoom.map((user)=>{
             return user.userId
         })
-    
-    
+
     
         foundUser = usersInRoom.find((user)=>{
             return user.userId == currentUserId
@@ -149,10 +148,7 @@ io.on('connection',async (socket)=>{
         // check if duiplicate 
         if(foundUser){
 
-            
-     
-            
-     
+
             
             io.to(foundUser.socketId).emit('duplicate','error')
 
@@ -185,11 +181,6 @@ io.on('connection',async (socket)=>{
                
                 socket.join(room)
               
-
-            
-                
-              
-
                 if(user.username != 'guest'){
                     socket.to(user.room).emit('new-user',{
                         user:user.username,
@@ -403,19 +394,12 @@ io.on('connection',async (socket)=>{
 
         socket.on('new-player', obj => {
        
-
-
             const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]);
-
-
-
             const user = getCurrentUser(socket.id)
-  
             plyers.push(obj);
-   
-         
-
             socket.to(user.room).emit('new-player', obj)});
+
+
 
         socket.on('move-player',  info => {
             const user = getCurrentUser(socket.id)

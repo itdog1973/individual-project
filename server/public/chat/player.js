@@ -2,8 +2,10 @@
 const canvas = document.getElementById('canvas');
 canvas.height=window.innerHeight
 canvas.width=window.innerWidth-450
+
 let img = new Image();
 img.src = '/characters/mr0.png'
+
 
 
 let imgr = new Image();
@@ -18,10 +20,8 @@ let imgr2 = new Image();
 imgr2.src = '/characters/mr2.png'
 
 
-
 let imgup = new Image();
 imgup.src = '/characters/mb.png'
-
 
 
 let imgup1 = new Image();
@@ -32,16 +32,16 @@ let imgup2 = new Image();
 imgup2.src = '/characters/mb2.png'
 
 
-
 let imgd = new Image()
 imgd.src = '/characters/mf.png'
+
 
 let imgd1 = new Image()
 imgd1.src = '/characters/mf1.png'
 
+
 let imgd2 = new Image()
 imgd2.src = '/characters/mf2.png'
-
 
 
 let imgl = new Image()
@@ -55,6 +55,13 @@ imgl1.src = '/characters/ml1.png'
 
 let imgl2 = new Image()
 imgl2.src = '/characters/ml2.png'
+
+
+
+
+
+
+
 
 
 
@@ -79,9 +86,10 @@ class Player{
     }
 
     draw(ctx){
-      
-        ctx.drawImage(this.img,this.x,this.y,this.w,this.h)
-
+        let load = true
+        this.img.onload= ctx.drawImage(this.img,this.x,this.y,this.w,this.h)
+        load = false
+        return load
     }
 
     
