@@ -18,6 +18,7 @@ export async function getMsg(){
             isLoading = true
             let result = await fetch(endPoint)
             let data = await result.json()
+    
 
             offset +=20
        
@@ -49,10 +50,7 @@ let chatWindow = document.querySelector('#chat__message')
 
 function renderMsg(data){
     let chatContainer = document.getElementById('chat__message')
-  
-
-  
-    const reverseData = data.reverse()
+    const reverseData = Array.from(data).reverse()
     
 
     reverseData.forEach((msg)=>{
@@ -81,7 +79,7 @@ function renderMsg(data){
             userMsg.className='user_msg'
             userMsg.textContent=msg['message']
 
-            msgBlock.append(infoBlock,userMsg)
+         
         }
        
 
@@ -115,26 +113,25 @@ function renderMsg(data){
         
                 imgContainer.appendChild(image)
 
-                msgBlock.append(infoBlock,userMsg,imgContainer)
+           
                 
         
                 })
         
         
             
-            
         
         }
 
 
-
-        
-        
-        
-        
-        
-        
-
+        if((userMsg !== undefined) && (imgContainer !== undefined)){
+            msgBlock.append(infoBlock,userMsg,imgContainer)
+        }else if(userMsg !== undefined){
+            msgBlock.append(infoBlock,userMsg)
+        }else if(imgContainer !== undefined){
+            msgBlock.append(infoBlock,imgContainer)
+        }
+      
 
         chatContainer.appendChild(msgBlock)
 
@@ -167,58 +164,110 @@ function renderMsg(data){
 
 
 export function renderHistoryMsg(data){
-
-
-  
     let chatContainer = document.getElementById('chat__message')
-    let messageTop = document.getElementById('chat__message').children[1]
-  
-
-
-    data.forEach((msg)=>{
-        let msgBlock = document.createElement('div')
-        msgBlock.className='msg_block'
-        let infoBlock = document.createElement('div')
-        infoBlock.className='info_block'
-        let userInfo = document.createElement('span')
-        userInfo.textContent=msg['user_name']
-        userInfo.className='user_info'
-
-        let userTime = document.createElement('span')
-        userTime.className='user_time'
-        userTime.textContent=msg['create_date']
-
-
-        infoBlock.append(userInfo,userTime)
-
-
-        let userMsg = document.createElement('p')
-        userMsg.className='user_msg'
-        userMsg.textContent=msg['message']
-
-        msgBlock.append(infoBlock,userMsg)
-
-
-
-
-       
-
-        chatContainer.insertBefore(msgBlock,messageTop)
-       
-       
-
-    
 
  
+    const reverseData = Array.from(data).reverse()
+
+
+    let messageTop = document.getElementById('chat__message').children[1]
+    reverseData.forEach((msg)=>{
+      
+   
+        let msgBlock = document.createElement('div')
+         msgBlock.className='msg_block'
+         let infoBlock;
+         let userMsg;
+         let imgContainer;
+         infoBlock = document.createElement('div')
+         infoBlock.className='info_block'
+         let userInfo = document.createElement('span')
+         userInfo.textContent=msg['user_name']
+         userInfo.className='user_info'
+ 
+         let userTime = document.createElement('span')
+         userTime.className='user_time'
+         userTime.textContent=msg['create_date']
+ 
+ 
+         infoBlock.append(userInfo,userTime)
+        if(msg['message'] != null){
+           
+            userMsg = document.createElement('p')
+            userMsg.className='user_msg'
+            userMsg.textContent=msg['message']
+
+           
+        }
+       
+
+        
+        if(msg['images'] != null){
+            
+         
+                let pictures = JSON.parse(msg['images'])
+            
+
+                imgContainer = document.createElement('div')
+                imgContainer.className='usr-images-container'
+                pictures.forEach(p=>{
+           
+                let image = document.createElement('img')
+                image.className='usr-image'
+        
+                image.src = p
+
+                let modal = document.getElementById("Modal");
+                let modalImg = document.querySelector('.modal-content')
+                image.onclick = ()=>{
+                    modal.style.display='block';
+                    modalImg.src = p
+                    let close = document.querySelector('.close')
+
+                    close.onclick=()=>{
+                        modal.style.display='None';
+                    }
+                }
+        
+                imgContainer.appendChild(image)
+
+              
+                
+        
+                })
+                
+
+           
+            
+            
+             
+        }
+    
+
+        if((userMsg !== undefined) && (imgContainer !== undefined)){
+            msgBlock.append(infoBlock,userMsg,imgContainer)
+        }else if(userMsg !== undefined){
+            msgBlock.append(infoBlock,userMsg)
+        }else if(imgContainer !== undefined){
+            msgBlock.append(infoBlock,imgContainer)
+        }
+
+        chatContainer.insertBefore(msgBlock,messageTop)
+
+
+
     })
     
-    
+ 
     if(data.length<20){
      
         observer.unobserve(document.querySelector('.trigger'))
+        chatWindow.scrollTop=300
         
+    }else{
+        chatWindow.scrollTop=1000
     }
-    chatWindow.scrollTop=120
+ 
    
 
 
