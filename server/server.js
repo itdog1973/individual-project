@@ -98,24 +98,7 @@ app.get('/', checkUser, (req,res)=>{
 
 app.get('/chat/:id', checkUser, async (req,res)=>{
     const chatID = req.params.id
-    // let title=req.query.title;
-    // let message=req.query.message;
-    // let author=req.query.author;
-    
-    // if(title && message && author){
-    //     try{
-            
-    //         if(result.length != 0){
-    //             res.render('chat')
-    //         }else{
-    //             res.redirect('/')
-    //         }
-    //     }catch(err){
-    //         res.redirect('/')
-    //     }
-    // }else{
-    //     res.redirect('/')
-    // }
+
     try{
         let result = await postDB.checkSpecific(chatID)
      
@@ -162,10 +145,10 @@ io.on('connection',async (socket)=>{
    
     let foundUser;
    
-    //start join room {author,title,message,username,threadId,time}
+ 
     socket.on('joinRoom',async (room)=>{
         console.log('room id',room)
-        // console.log(author,title,message,username,threadId,currentUserId,time)
+
        
         const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]); ///////show socket
         console.log('the total players in connecting to this socket',sockets);
@@ -223,18 +206,7 @@ io.on('connection',async (socket)=>{
                 socket.join(room)
               
 
-                // socket.emit('init-load',{
-                //     author,
-                //     message,
-                //     title,
-                //     user:user.username,
-                //     createAt: time
-                // })
-
-
-
-
-                // console.log(user) // 印出user details
+            
                 
               
 
@@ -303,13 +275,6 @@ io.on('connection',async (socket)=>{
 
                 
 
-                // socket.emit('init-load',{
-                //     author,
-                //     message,
-                //     title,
-                //     user:user.username,
-                //     createAt: time
-                // })
 
                 if(user.username!="guest"){
                     const record = await postDB.getBrowseRecord(currentUserId,room)

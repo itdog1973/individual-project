@@ -38,7 +38,12 @@ router.post('/', requireAuth , async (req,res)=>{
 
           
             client.lPush('posts',JSON.stringify({thread_Id:result,title,message,author_id:res.user_id,category:cat,create_date,user_name:res.userName}))
-            client.rPop('posts')
+            let listLength = (await client.lRange('posts',0,-1)).length
+            if(listLength > 7){
+                console.log('length over 7')
+                client.rPop('posts')
+            }
+           
             
 
             console.log('insert post to db')
