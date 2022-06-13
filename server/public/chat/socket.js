@@ -19,7 +19,7 @@ socket.emit('joinRoom',roomId)
 
 
 
-const chatWindow =  document.getElementById('chat__window')
+const chatWindow =  document.getElementById('chat__message')
 const messageInput = document.getElementById('message')
 const chatMsg = document.getElementById('chat__message')
 const feedback = document.getElementById('feedback')
