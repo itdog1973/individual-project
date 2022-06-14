@@ -133,6 +133,7 @@ io.on('connection',async (socket)=>{
         const sockets = Array.from(io.sockets.sockets).map(socket => socket[0]); ///////show socket
   
         let usersInRoom = getRoomUsers(room)
+     
 
         const usersIdInRoom = usersInRoom.map((user)=>{
             return user.userId
@@ -180,7 +181,12 @@ io.on('connection',async (socket)=>{
         
                
                 socket.join(room)
-              
+                let currentUserinroom = getRoomUsers(room)
+                console.log('current all user in room',currentUserinroom)
+
+
+
+
                 if(user.username != 'guest'){
                     socket.to(user.room).emit('new-user',{
                         user:user.username,
@@ -217,14 +223,17 @@ io.on('connection',async (socket)=>{
 
 
 
-
-
+                
+                
 
                 // send users and room info 
-                io.to(user.room).emit('roomusers',{
+                io.to(user.room).emit('roomusers',
+                {
                     room:user.room,
                     users: getRoomUsers(user.room)
-                })
+                }
+                
+                )
 
 
 
@@ -274,7 +283,7 @@ io.on('connection',async (socket)=>{
                 //init a character for user
 
                 
-                let roomUsers = getRoomUsers(room)
+                // let roomUsers = getRoomUsers(room)
 
 
 

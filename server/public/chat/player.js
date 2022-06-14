@@ -4,57 +4,57 @@ canvas.height=window.innerHeight
 canvas.width=window.innerWidth-450
 
 let img = new Image();
-img.src = '/characters/mr0.png'
+img.src = 'https://dv0q95071dj8r.cloudfront.net/mr0.png'
 
 
 
 let imgr = new Image();
-imgr.src = '/characters/mr.png'
+imgr.src = 'https://dv0q95071dj8r.cloudfront.net/mr.png'
 
 
 let imgr1 = new Image();
-imgr1.src = '/characters/mr1.png'
+imgr1.src = 'https://dv0q95071dj8r.cloudfront.net/mr1.png'
 
 
 let imgr2 = new Image();
-imgr2.src = '/characters/mr2.png'
+imgr2.src = 'https://dv0q95071dj8r.cloudfront.net/mr2.png'
 
 
 let imgup = new Image();
-imgup.src = '/characters/mb.png'
+imgup.src = 'https://dv0q95071dj8r.cloudfront.net/mb.png'
 
 
 let imgup1 = new Image();
-imgup1.src = '/characters/mb1.png'
+imgup1.src = 'https://dv0q95071dj8r.cloudfront.net/mb1.png'
 
 
 let imgup2 = new Image();
-imgup2.src = '/characters/mb2.png'
+imgup2.src = 'https://dv0q95071dj8r.cloudfront.net/mb2.png'
 
 
 let imgd = new Image()
-imgd.src = '/characters/mf.png'
+imgd.src = 'https://dv0q95071dj8r.cloudfront.net/mf.png'
 
 
 let imgd1 = new Image()
-imgd1.src = '/characters/mf1.png'
+imgd1.src = 'https://dv0q95071dj8r.cloudfront.net/mf1.png'
 
 
 let imgd2 = new Image()
-imgd2.src = '/characters/mf2.png'
+imgd2.src = 'https://dv0q95071dj8r.cloudfront.net/mf2.png'
 
 
 let imgl = new Image()
-imgl.src = '/characters/ml.png'
+imgl.src = 'https://dv0q95071dj8r.cloudfront.net/ml.png'
 
 
 let imgl1 = new Image()
-imgl1.src = '/characters/ml1.png'
+imgl1.src = 'https://dv0q95071dj8r.cloudfront.net/ml1.png'
 
 
 
 let imgl2 = new Image()
-imgl2.src = '/characters/ml2.png'
+imgl2.src = 'https://dv0q95071dj8r.cloudfront.net/ml2.png'
 
 
 
@@ -80,7 +80,7 @@ class Player{
         this.id = id;
         this.room=room;
         this.img = new Image()
-        this.img.src = '/characters/mr0.png'
+        this.img.src = 'https://dv0q95071dj8r.cloudfront.net/mr0.png'
         
 
     }

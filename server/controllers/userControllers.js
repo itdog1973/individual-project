@@ -4,15 +4,15 @@ const bcrypt = require('bcrypt')
 require('dotenv').config({path:__dirname+'/.env'})
 const jwt = require('jsonwebtoken')
 const { generateAccessToken } = require('../middleware/jwt')
-const maxAge = 1*24*60*60
+const maxAge = 14*24*60*60
 
 const user_register = async (req,res)=>{
     try{
-  
-        const hashedPassword = await bcrypt.hash(req.body.password, 10)
-        let user = await userDB.insertOne(req.body.username,hashedPassword,req.body.email)
+        const { username, password, email } = req.body
+        const hashedPassword = await bcrypt.hash(password, 10)
+        let user = await userDB.insertOne(username,hashedPassword,email)
 
-        const userData =  {user_id:user}
+        const userData =  {user_id:user, userName:username, userEmail:email}
 
         const token = generateAccessToken(userData)
   

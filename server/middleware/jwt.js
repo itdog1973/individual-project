@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
 
 
 
-const maxAge = 1*24*60*60
+const maxAge = 14*24*60*60
 function generateAccessToken(user){
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:maxAge})
 }
