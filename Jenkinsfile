@@ -7,6 +7,9 @@ pipeline {
 
             steps{
                 echo 'building the application...'
+                nodejs('Node-17.0.0'){
+                    sh 'npm install'
+                }
             }
         }
         stage("test"){
