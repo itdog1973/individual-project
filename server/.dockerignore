@@ -1,5 +1,0 @@
-.env
-.gitignore
-.DS_Store
-node_modules
-s3_config.json
