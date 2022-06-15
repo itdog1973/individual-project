@@ -18,7 +18,7 @@ messageDb.insertOne = (threadId, userId, time,message=null, images=null)=>{
                     })
                 }else{
                 
-                    connection.execute('INSERT INTO posts (thread_id, user_id, create_date, message, images) VALUES (?,?,?,?,?);',[threadId, userId, time, message, images],(err,results)=>{
+                    connection.execute('INSERT INTO message (chatroom_id, user_id, create_date, message, images) VALUES (?,?,?,?,?);',[threadId, userId, time, message, images],(err,results)=>{
                         if(err){
                             connection.rollback(()=>{
                                 connection.release()
@@ -50,7 +50,7 @@ messageDb.insertOne = (threadId, userId, time,message=null, images=null)=>{
 
 messageDb.selectAll = (threadId, offset)=>{
     return new Promise((resolve,reject)=>{
-        pool.execute(`select post_id,thread_id, message, create_date, user_name, images from posts join users on posts.user_id = users.user_id where posts.thread_id = (?) order by post_id desc limit 20 offset ${offset};`,[threadId],(err,results)=>{
+        pool.execute(`select message_id,chatroom_id, message, create_date, user_name, images from message join users on message.user_id = users.user_id where message.chatroom_id = (?) order by message_id desc limit 20 offset ${offset};`,[threadId],(err,results)=>{
             if(err){
                 return reject(err)
             }else{

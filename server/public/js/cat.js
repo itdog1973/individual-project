@@ -88,7 +88,7 @@ function renderCatPost(data){
         let thread = document.createElement('div')
         thread.className="thread"
         let a = document.createElement('a')
-        a.href=`/chat/${post["thread_id"]}}`
+        a.href=`/chat/${post["chatroom_id"]}}`
         a.className='link'
         
         let author = document.createElement('div')

@@ -120,7 +120,7 @@ io.on('connection',async (socket)=>{
     let userInfo = await checkToken(cookief)
     let currentUserId = userInfo['id']
     let currentUserName = userInfo['name']
-    
+    console.log(currentUserName)
 
    
     let foundUser;

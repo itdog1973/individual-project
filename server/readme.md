@@ -2,9 +2,13 @@
 
 ### Chill-TaLK is a public chat application which let you chat with people at any time
 
-#### WebSite URL: https://chill-talk.com
+#### Website URL: https://chill-talk.com
 
 ---
+
+
+
+![Alt Text](https://dv0q95071dj8r.cloudfront.net/chill.gif)
 
 ## **Main Feature**
 * Users can sign in locally or use Google OAuth 2.0.
@@ -15,3 +19,58 @@
 * Assign a character for each user when they access a chat room
 * Pictures that users send in the chat room are saved in S3 bucket
 
+# **Backend Technique**
+
+
+### Server Language
+- Node.js/Express
+
+### API
+* Restful API
+
+### Database
+- AWS RDS(MySQL)
+- MySql Event Scheduler
+- Full-text index (Search function)
+### CICD
+* Docker
+
+### Cloud Services
+* S3
+* CDN
+* Cloudwatch
+
+### Networking
+* HTTP & HTTPS
+* NGINX
+
+### Version Control
+* Git/GitHub
+
+### Key Points
+* Socket.io
+* MVC Pattern
+* Bcrypt
+
+
+# **Frontend Technique**
+
+### Frontend language
+
+* HTML 
+* CSS
+* Java Script
+
+### Key Point
+* HTML Canvas API
+
+# **Architecture**
+
+* Server Architecture
+
+
+
+
+
+## **ERD**
+![ERD](https://dv0q95071dj8r.cloudfront.net/forum.png) 

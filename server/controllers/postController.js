@@ -94,10 +94,10 @@ const post_create_post = async (req,res)=>{
             let create_date = new Date().toLocaleString()
             const result = await postDB.insertOne(title,message,res.user_id,create_date,cat)
    
-            const payload ={ title, message, user_name:res.userName, thread_id:result, userId:res.user_id ,create_date}
+            const payload ={ title, message, user_name:res.userName, chatroom_id:result, userId:res.user_id ,create_date}
 
           
-            client.lPush('posts',JSON.stringify({thread_id:result,title,message,author_id:res.user_id,category:cat,create_date,user_name:res.userName}))
+            client.lPush('posts',JSON.stringify({chatroom_id:result,title,message,author_id:res.user_id,category:cat,create_date,user_name:res.userName}))
             let listLength = (await client.lRange('posts',0,-1)).length
             if(listLength > 7){
       

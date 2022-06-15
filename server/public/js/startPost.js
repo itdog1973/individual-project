@@ -65,8 +65,8 @@ async function sendPost(ev){
 
         if(response.status=="200"){
 
-        
-            window.location.href=`/chat/${data.thread_id}`
+            console.log(data.chatroom_id)
+            window.location.href=`/chat/${data.chatroom_id}`
         }
         if(response.status=="400"){
             document.querySelector('.error-message').innerHTML="重覆的title名，請重新填寫"

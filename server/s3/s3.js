@@ -46,7 +46,6 @@ function processImg(data){
         if(err){
             reject('null')
         }else{
-            // resolve(`https://chill-talk2.s3.ap-northeast-1.amazonaws.com/${id}`)
             resolve(`https://dv0q95071dj8r.cloudfront.net/${id}`)
         }
     })
