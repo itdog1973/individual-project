@@ -3,5 +3,4 @@
 node_modules
 dump.rdb
 env.list
-Dockerfile
 .dockerignore
