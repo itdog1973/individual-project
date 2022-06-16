@@ -79,10 +79,8 @@ function checkToken(cookief){
                     }
             })
             }else{
-                return crypto.randomUUID() 
+                return reject(crypto.randomUUID())
             }
-            
-            
         })
     }else{
         return crypto.randomUUID()
