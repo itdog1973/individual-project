@@ -3,6 +3,7 @@ require('dotenv').config({path:__dirname+'/.env'})
 const userDB = require('../models/user')
 const cookie = require('cookie')
 const crypto = require('crypto')
+const e = require('express')
 
 
 const requireAuth = (req,res,next)=>{
@@ -40,11 +41,7 @@ const checkUser =  (req,res,next)=>{
                 console.log(err.message)
                 res.redirect('/login')
             }else{
-     console.log('checking'+decodeToken.user_id)
-
-
-
-
+        console.log('checking'+decodeToken.user_id)
 
         let user = await userDB.findOne(decodeToken.user_id);
         // inject the user to our view use res.locals, then we can access it from view
@@ -72,17 +69,19 @@ function checkToken(cookief){
         let cookies = cookie.parse(cookief)
         let token = cookies['jwt']
         return new Promise((resolve, reject)=>{
-            jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err, decodeToken)=>{
-                if(err){
-                    console.log('this',err.message)
-                    return reject (crypto.randomUUID())
-                }else{
-                
-                    return  resolve({id:decodeToken.user_id, name:decodeToken.userName})
-          
-                     
-                }
-        })
+            if(token){
+                jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err, decodeToken)=>{
+                    if(err){
+                        console.log('why this',err)
+                        return reject (crypto.randomUUID())
+                    }else{
+                        return  resolve({id:decodeToken.user_id, name:decodeToken.userName})
+                    }
+            })
+            }else{
+                return crypto.randomUUID() 
+            }
+            
             
         })
     }else{

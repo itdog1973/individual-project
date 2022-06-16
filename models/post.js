@@ -1,4 +1,3 @@
-const { threadId } = require('../db-config')
 const pool = require('../db-config')
 
 
@@ -175,19 +174,28 @@ postDB.insertBrowseTime = (userId, threadId)=>{
 postDB.getBrowseRecord = (userId, threadId)=>{
     return new Promise((resolve, reject)=>{
         console.log(userId, threadId)
-        pool.execute('select * from user_chatroom where user_id = (?) and chatroom_id = (?);',[userId, threadId],(err,results)=>{
-            console.log(results)
-            return resolve(results)
-        })
+        try{
+            pool.execute('select * from user_chatroom where user_id = (?) and chatroom_id = (?);',[userId, threadId],(err,results)=>{
+                console.log(results)
+                return resolve(results)
+            })
+        }catch(err){
+            console.log(err)
+            reject(err)
+        }
     })
 }
 
 postDB.updateBrowseRecord = (userId, threadId)=>{
     return new Promise((resolve, reject)=>{
-        pool.execute('update user_chatroom set browse_date = now() where user_id = (?) and chatroom_id = (?);',[userId, threadId],(err,results)=>{
-            console.log('update result',results)
-            return resolve(results)
-        })
+        try{
+            pool.execute('update user_chatroom set browse_date = now() where user_id = (?) and chatroom_id = (?);',[userId, threadId],(err,results)=>{
+                console.log('update result',results)
+                return resolve(results)
+            })
+        }catch(err){
+            console.log(err)
+        }
     })
 }
 

@@ -1,31 +1,17 @@
 pipeline {
 
-    agent any
-
+    agent {
+       docker{
+            image 'node:17-alpine'
+             args '-p 3000:3000'
+       }
+    }
     stages {
-        stage("build"){
-
-            steps{
-                echo 'building the application...'
-                nodejs('Node-17.0.0'){
-                    sh 'npm install'
-                }
-            }
-        }
-        stage("test"){
-
-            steps{
-                echo 'testing the application...'
-            }
-        }
-
-        stage("deploy"){
-
-            steps{
-                echo 'deploying the application...'
+        stage('Build'){
+            steps {
+                sh 'npm install'
             }
         }
     }
-
-
+ 
 }

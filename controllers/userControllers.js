@@ -1,6 +1,6 @@
 // user_register, user_details, user_login, user_logout
 const userDB= require('../models/user')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 require('dotenv').config({path:__dirname+'/.env'})
 const jwt = require('jsonwebtoken')
 const { generateAccessToken } = require('../middleware/jwt')
