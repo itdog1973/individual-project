@@ -57,9 +57,12 @@
 * JWT
 * Bcrypt
 
+### Architectural Pattern
+* MVC
+
 ### Key Points
 * Socket.io
-* MVC Pattern
+
 
 
 
@@ -78,7 +81,7 @@
 
 
 ## **System Architecture**
-![ERD](https://dv0q95071dj8r.cloudfront.net/system-design3.png) 
+![ERD](https://dv0q95071dj8r.cloudfront.net/sd.png) 
 
 ## **ERD**
 ![ERD](https://dv0q95071dj8r.cloudfront.net/forum.png) 
@@ -102,4 +105,4 @@
 * Assign a character for each user when they access a chat room
 ![Alt Text](https://dv0q95071dj8r.cloudfront.net/character.gif)
 
-* Pictures that users send in the chat room are saved in S3 bucket
+* Pictures that users send in the chat room are stored in S3 bucket
