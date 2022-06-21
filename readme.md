@@ -78,7 +78,7 @@
 
 
 ## **System Architecture**
-![ERD](https://dv0q95071dj8r.cloudfront.net/system-design.png) 
+![ERD](https://dv0q95071dj8r.cloudfront.net/system-deisgn2.png) 
 
 ## **ERD**
 ![ERD](https://dv0q95071dj8r.cloudfront.net/forum.png) 
