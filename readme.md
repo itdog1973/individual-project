@@ -47,7 +47,7 @@
 * NGINX
 * Ngrok
 * Domain Name System (DNS)
-* SSL (SSL For Free)
+* SSL (Zero SSL)
 
 ### Version Control
 * Git/GitHub
@@ -73,9 +73,11 @@
 * HTML 
 * CSS
 * Java Script
+* AJAX
 
 ### Key Point
 * HTML5 Canvas API
+* FileReader (For convert image to base64 encoded string)
 
 # **Architecture**
 
