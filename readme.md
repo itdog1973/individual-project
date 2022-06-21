@@ -105,4 +105,8 @@
 * Assign a character for each user when they access a chat room
 ![Alt Text](https://dv0q95071dj8r.cloudfront.net/character.gif)
 
+* Images upload with preview & enlarge function
 * Pictures that users send in the chat room are stored in S3 bucket
+
+## **Open API Specification:**
+* [Open API Document](https://app.swaggerhub.com/apis-docs/JASONKOML2017_1/Chill-TaLK_API_OAS3.0/1.0.0 "Open API Document")
