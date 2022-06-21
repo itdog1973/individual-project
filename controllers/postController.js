@@ -2,11 +2,12 @@
 // post_index, post_details, post_create_post, post_personal_post
 const postDB = require('../models/post')
 const redis = require('redis')
-const client = redis.createClient(6379)
+const client = redis.createClient({
+    url: 'redis://redis-server',
+    port: 6379
+});
 async function connectR(){
     client.connect()
-
- 
 }
 connectR()
 

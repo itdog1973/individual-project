@@ -1,4 +1,3 @@
-const { reject } = require('bcrypt/promises')
 const pool = require('../db-config')
 
 

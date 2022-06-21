@@ -8,7 +8,7 @@
 
 
 
-![Alt Text](https://dv0q95071dj8r.cloudfront.net/chill.gif)
+![Alt Text](https://dv0q95071dj8r.cloudfront.net/chill-360.gif)
 
 ## **Main Feature**
 * Users can sign in locally or use Google OAuth 2.0.

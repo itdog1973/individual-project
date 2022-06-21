@@ -63,7 +63,7 @@ function renderPost(data){
 
 
 
-        
+            console.log(post)
         
             let userTag = document.querySelector('.login_user')
             let user;
