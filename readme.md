@@ -45,7 +45,6 @@
 ### Networking
 * HTTP & HTTPS
 * NGINX
-* Ngrok
 * Domain Name System (DNS)
 * SSL (Zero SSL)
 
@@ -109,6 +108,9 @@
 ![Alt Text](https://dv0q95071dj8r.cloudfront.net/character.gif)
 
 * Images upload with preview & enlarge function
+
+* Use Nginx to Configure SSL and redirect HTTP request to HTTPS 
+
 * Pictures that users send in the chat room are stored in S3 bucket
 
 ## **Open API Specification:**
