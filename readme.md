@@ -91,6 +91,7 @@
 
 
 ## **Application Feature**
+---
 * Users can sign in locally or use Google OAuth 2.0.
 
 * User authentication with Json Web Token.
